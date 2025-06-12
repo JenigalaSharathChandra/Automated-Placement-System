@@ -23,6 +23,10 @@ from django.conf.urls.static import static
 from django.http import HttpResponse
 from django.core.management import call_command
 
+def run_migrations(request):
+    call_command('migrate')
+    return HttpResponse("✅ Migrations completed successfully!")
+
 urlpatterns = [
     path('create-admin/', lambda request: (call_command('create_admin'), HttpResponse("✅ Superuser created."))[1]),
     path('', include('accounts.urls')),
@@ -31,6 +35,7 @@ urlpatterns = [
     path('coordinator/', include('coordinator.urls')),
     path('adminpanel/', include('adminpanel.urls')),
     path('admin/', admin.site.urls),
+    path('run-migrations/', run_migrations), 
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
