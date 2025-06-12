@@ -107,3 +107,12 @@ MEDIA_URL = '/resumes/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'resumes')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ✅ Trust Railway domain for CSRF protection
+CSRF_TRUSTED_ORIGINS = [
+    'https://automated-placement-system-production.up.railway.app'
+]
+
+# ✅ Optional: secure cookies for HTTPS
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
