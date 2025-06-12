@@ -26,6 +26,9 @@ from django.core.management import call_command
 def run_migrations(request):
     call_command('migrate')
     return HttpResponse("✅ Migrations completed successfully!")
+def run_collectstatic(request):
+    call_command('collectstatic', interactive=False)
+    return HttpResponse("✅ Static files collected.")
 
 urlpatterns = [
     path('create-admin/', lambda request: (call_command('create_admin'), HttpResponse("✅ Superuser created."))[1]),
@@ -36,6 +39,7 @@ urlpatterns = [
     path('adminpanel/', include('adminpanel.urls')),
     path('admin/', admin.site.urls),
     path('run-migrations/', run_migrations), 
+    path('collectstatic/', run_collectstatic),  # Temporary
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
