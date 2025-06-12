@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Coordinator Dashboard</title>
+  <link rel="stylesheet" href="{% static 'css/coordinator.css' %}">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
+      <h2>Coordinator Panel</h2>
+      <nav>
+        <ul>
+          <li><a href="{% url 'coordinator_dashboard' %}" class="active">Dashboard</a></li>
+          <li><a href="{% url 'approve_jobs' %}">Approve Jobs</a></li>
+          <li><a href="{% url 'monitor_applications' %}">Monitor Applications</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <h1>Welcome, {{ user.username }} 👋</h1>
+      <p>Here’s your quick summary and actions.</p>
+
+      <div class="card-grid">
+        <a href="{% url 'approve_jobs' %}" class="card">
+          <h3>Pending Jobs</h3>
+          <p>{{ pending_jobs_count }} jobs awaiting approval.</p>
+        </a>
+
+        <a href="{% url 'monitor_applications' %}" class="card">
+          <h3>Monitor Applications</h3>
+          <p>{{ total_applications }} student applications received.</p>
+        </a>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

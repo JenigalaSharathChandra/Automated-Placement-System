@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Profile</title>
+  <link rel="stylesheet" href="{% static 'css/view_applicants.css' %}">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      text-align: center;
+      color: #004aad;
+      margin-bottom: 30px;
+    }
+
+    .info {
+      margin-bottom: 15px;
+    }
+
+    .info strong {
+      display: inline-block;
+      width: 130px;
+      color: #333;
+      vertical-align: top;
+    }
+
+    a.profile-link {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    a.profile-link:hover {
+      text-decoration: underline;
+    }
+
+    ul {
+      margin: 10px 0 20px 20px;
+      padding-left: 20px;
+      line-height: 1.6;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 8px 16px;
+      background-color: #004aad;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .back-btn:hover {
+      background-color: #003580;
+    }
+
+    .section-title {
+      margin: 25px 0 10px 0;
+      font-weight: bold;
+      color: #003366;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+      font-size: 18px;
+    }
+
+    .paragraph-text {
+      line-height: 1.8;
+      margin: 0 0 20px 0;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Student Profile</h1>
+
+    <div class="info"><strong>Full Name:</strong> {{ student.name }}</div>
+    <div class="info"><strong>Email:</strong> {{ student.user.email }}</div>
+    <div class="info"><strong>Skills:</strong> {{ student.skills|default:"Not provided" }}</div>
+    <div class="info"><strong>GPA:</strong> {{ student.gpa|default:"Not provided" }}</div>
+
+    <div class="info"><strong>LinkedIn:</strong>
+      {% if student.linkedin %}
+        <a href="{{ student.linkedin }}" target="_blank" class="profile-link">{{ student.linkedin }}</a>
+      {% else %}
+        Not provided
+      {% endif %}
+    </div>
+
+    <div class="info"><strong>GitHub:</strong>
+      {% if student.github %}
+        <a href="{{ student.github }}" target="_blank" class="profile-link">{{ student.github }}</a>
+      {% else %}
+        Not provided
+      {% endif %}
+    </div>
+
+    <div class="section-title">Bio</div>
+    <p class="paragraph-text">
+      {{ student.bio|linebreaksbr|default:"No bio available." }}
+    </p>
+
+    {% if achievements_list %}
+      <div class="section-title">Achievements</div>
+      <ul>
+        {% for item in achievements_list %}
+          <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if projects_list %}
+      <div class="section-title">Projects</div>
+      <ul>
+        {% for item in projects_list %}
+          <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if certifications_list %}
+      <div class="section-title">Certifications</div>
+      <ul>
+        {% for item in certifications_list %}
+          <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <a href="{% url 'view_applicants' %}" class="back-btn">← Back to Applicants</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upcoming Interviews | Student</title>
+  <link rel="stylesheet" href="{% static 'css/upcoming_interviews.css' %}">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
+      <h2>Student Panel</h2>
+      <nav>
+        <ul>
+          <li><a href="{% url 'student_dashboard' %}">Dashboard</a></li>
+          <li><a href="{% url 'view_jobs' %}">View Jobs</a></li>
+          <li><a href="{% url 'applied_jobs' %}">Applied Jobs</a></li>
+          <li><a href="{% url 'upcoming_interviews' %}" class="active">Upcoming Interviews</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <h1>Upcoming Interviews 🎯</h1>
+
+      {% if page_obj.object_list %}
+        <table class="applicants-table">
+          <thead>
+            <tr>
+              <th>Job Title</th>
+              <th>Company</th>
+              <th>Scheduled Time</th>
+              <th>Mode</th>
+              <th>Meeting Link</th>
+              <th>Notes</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for interview in page_obj %}
+              <tr>
+                <td>{{ interview.application.job.title }}</td>
+                <td>{{ interview.application.job.recruiter.company_name }}</td>
+                <td>{{ interview.scheduled_at }}</td>
+                <td>{% if interview.meeting_link %}Online{% else %}Offline{% endif %}</td>
+                <td>
+                  {% if interview.meeting_link %}
+                    <a href="{{ interview.meeting_link }}" target="_blank">Join</a>
+                  {% else %}-{% endif %}
+                </td>
+                <td>{{ interview.notes }}</td>
+                <td>{{ interview.status|title }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <div class="pagination">
+          {% if page_obj.has_previous %}
+            <a href="?page=1">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+          {% endif %}
+
+          <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+          {% endif %}
+        </div>
+
+      {% else %}
+        <p>No upcoming interviews scheduled.</p>
+      {% endif %}
+    </main>
+  </div>
+</body>
+</html>

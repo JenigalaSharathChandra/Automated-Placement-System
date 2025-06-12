@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register | Campus Recruitment System</title>
+  <link rel="stylesheet" href="{% static 'css/register.css' %}">
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <img src="{% static 'images/logo.png' %}" alt="Campus Logo" class="login-logo">
+
+      <h2 class="title">Create Account</h2>
+      <p class="subtitle">Join the recruitment system</p>
+      
+      <form method="post">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password1" placeholder="Password" required>
+        <input type="password" name="password2" placeholder="Confirm Password" required>
+
+        <select name="role" id="role-select" required>
+          <option value="" disabled selected>Select Role</option>
+          <option value="student">Student</option>
+          <option value="recruiter">Company Recruiter</option>
+          <option value="coordinator">Placement Coordinator</option>
+          <option value="admin">Administrator</option>
+        </select>
+
+        <div id="company-name-field" class="hidden">
+          <input type="text" name="company_name" placeholder="Company Name">
+        </div>
+
+        <button type="submit">Register</button>
+      </form>
+
+      <p class="register-link">Already have an account? <a href="/login/">Login here</a></p>
+    </div>
+  </div>
+
+ <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const roleSelect = document.getElementById('role-select');
+      const companyField = document.getElementById('company-name-field');
+
+      function toggleCompanyField() {
+        if (roleSelect.value === 'recruiter') {
+          companyField.style.display = 'block';
+        } else {
+          companyField.style.display = 'none';
+        }
+      }
+
+      roleSelect.addEventListener('change', toggleCompanyField);
+      toggleCompanyField();  // on page load
+    });
+  </script>
+</body>
+</html>

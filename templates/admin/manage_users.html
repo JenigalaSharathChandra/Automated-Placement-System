@@ -1,0 +1,136 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Users</title>
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    button {
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .pagination {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .pagination a, .pagination span {
+      display: inline-block;
+      margin: 0 6px;
+      padding: 8px 12px;
+      background-color: #e0e0e0;
+      border-radius: 4px;
+      text-decoration: none;
+      color: #333;
+    }
+
+    .pagination .current {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    {% include 'admin/_sidebar.html' %}
+
+    <main class="main-content">
+      <h1>Manage Users</h1>
+
+      <form method="get" style="margin-bottom: 20px;">
+        <label for="role">Filter by Role:</label>
+        <select name="role" onchange="this.form.submit()">
+          <option value="" {% if not selected_role %}selected{% endif %}>-- All --</option>
+          <option value="student" {% if selected_role == 'student' %}selected{% endif %}>Student</option>
+          <option value="recruiter" {% if selected_role == 'recruiter' %}selected{% endif %}>Recruiter</option>
+          <option value="coordinator" {% if selected_role == 'coordinator' %}selected{% endif %}>Coordinator</option>
+          <option value="admin" {% if selected_role == 'admin' %}selected{% endif %}>Admin</option>
+        </select>
+      </form>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Date Joined</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in page_obj %}
+          <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role|title }}</td>
+            <td>{{ user.date_joined|date:"Y-m-d H:i" }}</td>
+            <td>{{ user.is_active|yesno:"Active,Inactive" }}</td>
+            <td>
+              {% if user != request.user %}
+              <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="delete_user_id" value="{{ user.id }}">
+                <button type="submit" onclick="return confirm('Are you sure you want to delete {{ user.username }}?');">Delete</button>
+              </form>
+
+              <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="toggle_active_user_id" value="{{ user.id }}">
+                <button type="submit">
+                  {% if user.is_active %}Deactivate{% else %}Activate{% endif %}
+                </button>
+              </form>
+              {% else %}
+              <em>You</em>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6">No users found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- Pagination Controls -->
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a href="?{% if selected_role %}role={{ selected_role }}&{% endif %}page=1">First</a>
+          <a href="?{% if selected_role %}role={{ selected_role }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+          <a href="?{% if selected_role %}role={{ selected_role }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+          <a href="?{% if selected_role %}role={{ selected_role }}&{% endif %}page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+      </div>
+    </main>
+  </div>
+</body>
+</html>

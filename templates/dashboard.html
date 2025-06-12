@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="{% static 'css/student.css' %}">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
+      <h2>Student Panel</h2>
+      <nav>
+        <ul>
+          <li><a href="#" class="active">Dashboard</a></li>
+          <li><a href="#">View Jobs</a></li>
+          <li><a href="#">Applied Jobs</a></li>
+          <li><a href="#">Profile</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <h1>Welcome, Student 👋</h1>
+      <p>Here’s your quick summary and options.</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h3>Jobs Available</h3>
+          <p>15 new job postings</p>
+        </div>
+        <div class="card">
+          <h3>Applications Sent</h3>
+          <p>3 applications submitted</p>
+        </div>
+        <div class="card">
+          <h3>Status Updates</h3>
+          <p>2 interviews scheduled</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

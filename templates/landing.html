@@ -1,0 +1,188 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Campus Recruit</title>
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .back-to-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #004aad;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 50%;
+      font-size: 18px;
+      text-align: center;
+      cursor: pointer;
+      display: none;
+      z-index: 1000;
+    }
+    .back-to-top:hover {
+      background-color: #003580;
+    }
+    @media (max-width: 768px) {
+      .hero-buttons .btn {
+        display: block;
+        margin: 10px auto;
+      }
+      .about-columns {
+        flex-direction: column;
+      }
+      .testimonial-cards {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+    <header class="landing-header">
+        <div class="left">
+            <img src="{% static 'images/logo.png' %}" class="logo" alt="Campus Recruit Logo">
+        </div>
+        <nav class="landing-nav">
+            <a href="#about">About</a>
+            <a href="#how">How It Works</a>
+            <a href="#testimonials">Testimonials</a>
+            <a href="#contact">Contact</a>
+            <a href="{% url 'register' %}">Register</a>
+        </nav>
+    </header>
+
+  <section class="hero-section fade-in" id="top">
+    <div class="hero-content">
+      <h1>Connecting Talent to Opportunity 🎓</h1>
+      <p>Welcome to Campus Recruit – the one-stop platform for students, recruiters, and coordinators to collaborate and succeed in the hiring journey.</p>
+      <div class="hero-buttons">
+        <a href="{% url 'login' %}?role=student" class="btn">Student Login</a>
+        <a href="{% url 'login' %}?role=recruiter" class="btn">Recruiter Login</a>
+        <a href="{% url 'login' %}?role=coordinator" class="btn secondary">Coordinator Login</a>
+        <a href="{% url 'login' %}?role=admin" class="btn secondary">Admin Login</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section fade-in" id="about">
+    <h2>About Us</h2>
+    <p class="mission">Campus Recruit is designed to bridge the gap between students and opportunities. We empower recruiters to connect with top talent, students to discover jobs, and coordinators to facilitate the placement process effortlessly.</p>
+    <div class="about-columns">
+      <div class="column">
+        <h3>🌟 Our Mission</h3>
+        <p>To build a transparent, inclusive, and efficient recruitment platform that accelerates career opportunities for students and streamlines hiring for recruiters.</p>
+      </div>
+      <div class="column">
+        <h3>🚀 Our Vision</h3>
+        <p>To become the go-to placement ecosystem for educational institutions and companies by driving innovation, data-driven decisions, and equal access.</p>
+      </div>
+    </div>
+    <p class="credit">Made with ❤️ by Batch 4 CSE-DS</p>
+  </section>
+
+  <section class="how-it-works fade-in" id="how-it-works">
+    <div class="container">
+      <h2>How It Works</h2>
+      <div class="steps">
+        <div class="step">
+          <h3>👨‍🎓 Students</h3>
+          <p>Create your profile, upload resumes, and apply for jobs you're eligible for.</p>
+        </div>
+        <div class="step">
+          <h3>🏢 Recruiters</h3>
+          <p>Post jobs, review applications, and schedule interviews seamlessly.</p>
+        </div>
+        <div class="step">
+          <h3>🤝 Coordinators</h3>
+          <p>Monitor placements, approve jobs, and ensure smooth communication.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonials fade-in" id="testimonials">
+    <h2>What People Are Saying</h2>
+    <div class="testimonial-cards">
+      <div class="testimonial-card">
+        <p>“I got placed in my dream company through Campus Recruit. The portal was easy to use and very intuitive.”</p>
+        <h4>— Rahul V., Final Year B.Tech Student</h4>
+      </div>
+      <div class="testimonial-card">
+        <p>“The recruitment process was fast and seamless. We could find talented candidates in just a few clicks.”</p>
+        <h4>— Priya M., HR at Infosys</h4>
+      </div>
+      <div class="testimonial-card">
+        <p>“Managing interviews and monitoring applications is now a breeze. Coordinators love the dashboard!”</p>
+        <h4>— Sunil K., Placement Coordinator</h4>
+      </div>
+    </div>
+  </section>
+
+  <footer class="landing-footer fade-in" id="contact">
+    <div class="container">
+      <p><strong>Contact Us:</strong> 245122750306@mvsrec.edu.in | +91-8309540796</p>
+      <p>&copy; {{ year|default:2025 }} Campus Recruit. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <a href="#top" class="back-to-top" id="backToTop">↑</a>
+
+  <script>
+    const fadeElements = document.querySelectorAll('.fade-in');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+    fadeElements.forEach(el => observer.observe(el));
+
+    // Back to top button
+    const backToTopBtn = document.getElementById("backToTop");
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.style.display = "block";
+      } else {
+        backToTopBtn.style.display = "none";
+      }
+    });
+  </script>
+  <script>
+  let lastScrollY = window.scrollY;
+  const header = document.querySelector(".landing-header");
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > lastScrollY) {
+      // Scrolling down
+      header.classList.add("hide-header");
+    } else {
+      // Scrolling up
+      header.classList.remove("hide-header");
+    }
+    lastScrollY = window.scrollY;
+  });
+
+  // Optional: Show header when hovering near top
+  document.addEventListener("mousemove", (e) => {
+    if (e.clientY < 60) {
+      header.classList.remove("hide-header");
+    }
+  });
+</script>
+
+</body>
+</html>

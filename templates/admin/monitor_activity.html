@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Monitor Activity</title>
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #eee;
+    }
+    .pagination {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .pagination a, .pagination span {
+      display: inline-block;
+      margin: 0 5px;
+      padding: 8px 12px;
+      background-color: #f0f0f0;
+      color: #333;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .pagination .current {
+      background-color: #004aad;
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    {% include 'admin/_sidebar.html' %}
+
+    <main class="main-content">
+      <h1>Monitor User Activity</h1>
+      <p>Overview of recent interactions by users on the platform.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>User</th>
+            <th>Activity Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for activity in page_obj %}
+          <tr>
+            <td>{{ activity.timestamp|date:"Y-m-d H:i" }}</td>
+            <td>{{ activity.user.username }}</td>
+            <td>{{ activity.activity_type }}</td>
+            <td>{{ activity.description }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4">No activity recorded yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a href="?page=1">First</a>
+          <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">Next</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Post a Job | Recruiter</title>
+  <link rel="stylesheet" href="{% static 'css/post_job.css' %}">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
+      <h2>Recruiter Panel</h2>
+      <nav>
+        <ul>
+          <li><a href="/company/dashboard/">Dashboard</a></li>
+          <li><a href="/company/post-job/" class="active">Post Jobs</a></li>
+          <li><a href="/company/view-applicants/">View Applicants</a></li>
+          <li><a href="/company/schedule-interviews/">Schedule Interviews</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <h1>Post a New Job 🏢</h1>
+
+      <!-- ✅ Display success/error messages -->
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <form class="post-job-form" method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label for="title">Job Title</label>
+          <input type="text" id="title" name="title" placeholder="Enter job title">
+        </div>
+
+        <div class="form-group">
+          <label for="description">Job Description</label>
+          <textarea id="description" name="description" placeholder="Enter job description"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="criteria">Eligibility Criteria</label>
+          <input type="text" id="criteria" name="criteria" placeholder="e.g. Minimum 7.0 GPA">
+        </div>
+
+        <div class="form-group">
+          <label for="vacancies">No. of Vacancies</label>
+          <input type="number" id="vacancies" name="vacancies" placeholder="Enter number of vacancies">
+        </div>
+
+        <button type="submit" class="post-btn">Post Job</button>
+      </form>
+
+    </main>
+  </div>
+</body>
+</html>

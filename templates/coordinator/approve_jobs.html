@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Approve Job Postings | Coordinator</title>
+  <link rel="stylesheet" href="{% static 'css/approve_jobs.css' %}">
+</head>
+<body>
+  <div class="dashboard-container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
+      <h2>Coordinator Panel</h2>
+      <nav>
+        <ul>
+          <li><a href="/coordinator/dashboard/">Dashboard</a></li>
+          <li><a href="/coordinator/approve-jobs/" class="active">Approve Jobs</a></li>
+          <li><a href="/coordinator/monitor-applications/">Monitor Applications</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <h1>Approve Job Postings ✅</h1>
+
+      <div class="jobs-container">
+        <table class="jobs-table">
+          <thead>
+            <tr>
+              <th>Job Title</th>
+              <th>Company</th>
+              <th>Criteria</th>
+              <th>Vacancies</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for job in jobs %}
+            <tr>
+              <td>{{ job.title }}</td>
+              <td>{{ job.recruiter.company_name }}</td>
+              <td>{{ job.criteria }}</td>
+              <td>{{ job.vacancies }}</td>
+              <td>
+                <a href="{% url 'approve_job_action' job.id %}">
+                  <button class="approve-btn">Approve</button>
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5">No job postings pending approval.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

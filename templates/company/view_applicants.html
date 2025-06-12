@@ -1,0 +1,200 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View Applicants | Recruiter</title>
+  <link rel="stylesheet" href="{% static 'css/view_applicants.css' %}">
+  <style>
+    .filter-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      margin-left: 4px;
+    }
+
+    .filter-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 5;
+      margin-top: 5px;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .filter-dropdown select {
+      font-size: 14px;
+      padding: 4px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .dropdown-header {
+      position: relative;
+    }
+
+    .pagination {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .pagination-buttons a {
+      display: inline-block;
+      margin: 0 8px;
+      padding: 6px 12px;
+      background-color: #004aad;
+      color: white;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+
+    .pagination-buttons a:hover {
+      background-color: #003580;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
+      <h2>Recruiter Panel</h2>
+      <nav>
+        <ul>
+          <li><a href="/company/dashboard/">Dashboard</a></li>
+          <li><a href="/company/post-job/">Post Jobs</a></li>
+          <li><a href="/company/view-applicants/" class="active">View Applicants</a></li>
+          <li><a href="/company/schedule-interviews/">Schedule Interviews</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <h1>Applicants 📋</h1>
+
+      <div class="applicants-container">
+        <table class="applicants-table">
+          <thead>
+            <tr>
+              <th>Student Name</th>
+              <th>Email</th>
+              <th>Skills</th>
+              <th>GPA</th>
+              <th class="dropdown-header">
+                Applied For
+                <button class="filter-toggle" onclick="toggleFilterDropdown(event)">▼</button>
+                <form method="get" id="jobFilterForm" class="filter-dropdown hidden">
+                  <select name="job_id" onchange="document.getElementById('jobFilterForm').submit()">
+                    <option value="">All Jobs</option>
+                    {% for job in job_list %}
+                      <option value="{{ job.id }}" {% if job.id|stringformat:"s" == request.GET.job_id %}selected{% endif %}>
+                        {{ job.title }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </form>
+              </th>
+              <th>Status</th>
+              <th>Profile</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for app in applications %}
+              <tr>
+                <td>{{ app.student.user.get_full_name|default:app.student.user.username }}</td>
+                <td>{{ app.student.user.email }}</td>
+                <td>{{ app.student.skills }}</td>
+                <td>{{ app.student.gpa }}</td>
+                <td>{{ app.job.title }}</td>
+                <td>
+                  <form method="post" class="status-form" data-app-id="{{ app.id }}">
+                    {% csrf_token %}
+                    <input type="hidden" name="application_id" value="{{ app.id }}">
+                    <select name="status" onchange="this.form.requestSubmit()">
+                      {% for key, value in app.STATUS_CHOICES %}
+                        <option value="{{ key }}" {% if app.status == key %}selected{% endif %}>{{ value }}</option>
+                      {% endfor %}
+                    </select>
+                  </form>
+                </td>
+                <td>
+                  <a href="{% url 'recruiter_student_profile' app.student.id %}" target="_blank" class="view-profile-link">
+                    View Profile
+                  </a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="7">No applicants found for this filter.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div class="pagination">
+          {% if page_obj.has_other_pages %}
+            <div class="pagination-buttons">
+              {% if page_obj.has_previous %}
+                <a href="?{% if request.GET.job_id %}job_id={{ request.GET.job_id }}&{% endif %}page={{ page_obj.previous_page_number }}">« Prev</a>
+              {% endif %}
+
+              <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+              {% if page_obj.has_next %}
+                <a href="?{% if request.GET.job_id %}job_id={{ request.GET.job_id }}&{% endif %}page={{ page_obj.next_page_number }}">Next »</a>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Async status form update
+    document.querySelectorAll('.status-form').forEach(form => {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch("{% url 'update_application_status' %}", {
+          method: "POST",
+          headers: { 'X-CSRFToken': csrfToken },
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            console.log("Status updated successfully!");
+          } else {
+            alert("Error: " + (data.error || "Unable to update."));
+          }
+        });
+      });
+    });
+
+    // Filter dropdown toggle
+    function toggleFilterDropdown(event) {
+      event.stopPropagation();
+      const dropdown = document.querySelector('.filter-dropdown');
+      dropdown.classList.toggle('hidden');
+    }
+
+    // Close dropdown on outside click
+    document.addEventListener('click', function () {
+      const dropdown = document.querySelector('.filter-dropdown');
+      if (dropdown && !dropdown.classList.contains('hidden')) {
+        dropdown.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

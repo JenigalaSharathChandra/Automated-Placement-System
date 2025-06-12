@@ -1,0 +1,204 @@
+/* landing.css */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f8fbff;
+  color: #333;
+}
+
+.landing-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 14px 30px;
+  background-color: #004aad;
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 999;
+}
+
+.left {
+  flex-shrink: 0;
+}
+
+.logo {
+  height: 50px;
+  background: white;
+  border-radius: 50%;
+  padding: 5px;
+}
+
+.landing-nav {
+  display: flex;
+  gap: 24px;
+  margin-left: 860px; /* Pulls it left toward logo */
+}
+
+
+.landing-nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  white-space: nowrap; /* ✅ keeps links on one line until wrap */
+  transition: color 0.3s ease;
+}
+
+.landing-nav a:hover {
+  color: #ffd700;
+}
+
+.hero-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 120px);
+  padding: 20px;
+  background: url('../images/hero-bg.jpg') center/cover no-repeat;
+  text-align: center;
+}
+
+.hero-content {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.hero-content h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.hero-content p {
+  font-size: 18px;
+  margin-bottom: 30px;
+  color: #555;
+}
+
+.hero-buttons .btn {
+  display: inline-block;
+  padding: 12px 24px;
+  margin: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  background-color: #004aad;
+  color: white;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.hero-buttons .btn:hover {
+  background-color: #003580;
+}
+
+.hero-buttons .btn.secondary {
+  background-color: #ddd;
+  color: #004aad;
+}
+
+.hero-buttons .btn.secondary:hover {
+  background-color: #bbb;
+}
+
+.landing-footer {
+  background-color: #004aad;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.about-section,
+.how-it-works {
+  padding: 60px 20px;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.about-section h2,
+.how-it-works h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #004aad;
+}
+
+.about-section p {
+  max-width: 700px;
+  margin: auto;
+  color: #555;
+  font-size: 16px;
+}
+
+.how-it-works .steps {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.how-it-works .step {
+  background-color: #e6f0ff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 280px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.step h3 {
+  color: #004aad;
+  margin-bottom: 10px;
+}
+
+.testimonials {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #f0f5ff;
+}
+
+.testimonials h2 {
+  font-size: 30px;
+  margin-bottom: 40px;
+  color: #004aad;
+}
+
+.testimonial-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+}
+
+.testimonial-card {
+  max-width: 320px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-card p {
+  font-size: 16px;
+  color: #444;
+  margin-bottom: 15px;
+}
+
+.testimonial-card h4 {
+  font-size: 15px;
+  color: #004aad;
+}
+
+.hide-header {
+  top: -100px;
+}
+
+@media (max-width: 768px) {
+  .landing-nav {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+}

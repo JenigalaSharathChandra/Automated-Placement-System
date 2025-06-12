@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View Jobs</title>
+  <link rel="stylesheet" href="{% static 'css/view_jobs.css' %}">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar (Optional) -->
+    <aside class="sidebar">
+      <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
+      <h2>Recruiter Panel</h2>
+      <nav>
+        <ul>
+          <li><a href="/company/dashboard/">Dashboard</a></li>
+          <li><a href="/company/post-job/">Post Job</a></li>
+          <li><a href="/company/view-jobs/" class="active">View Jobs</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <h1>Posted Jobs</h1>
+
+      {% if jobs %}
+        <div class="job-list">
+          {% for job in jobs %}
+            <div class="job-card">
+              <h2>{{ job.title }}</h2>
+              <p><strong>Company:</strong> {{ job.recruiter.company_name }}</p>
+              <p><strong>Description:</strong> {{ job.description }}</p>
+              <p><strong>Criteria:</strong> {{ job.criteria }}</p>
+              <p><strong>Vacancies:</strong> {{ job.vacancies }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No jobs posted yet.</p>
+      {% endif %}
+    </main>
+  </div>
+</body>
+</html>

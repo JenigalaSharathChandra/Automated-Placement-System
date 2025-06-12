@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+  <div class="dashboard-container">
+
+    {% include 'admin/_sidebar.html' %}
+
+    <main class="main-content">
+      <h1>Welcome, Admin 🛡️</h1>
+      <p>System overview and controls.</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h3>Registered Users</h3>
+          <p>{{ total_users }} users on platform</p>
+        </div>
+        <div class="card">
+          <h3>System Logs</h3>
+          <p>{{ total_logs }} log entries</p>
+        </div>
+        <div class="card">
+          <h3>Recruitment Stats</h3>
+          <p>{{ total_companies }} companies recruiting</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

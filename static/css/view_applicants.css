@@ -1,0 +1,175 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f7fc;
+  }
+  
+  .dashboard-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  /* Sidebar (same as company.css) */
+  .sidebar {
+    width: 240px;
+    background-color: #004aad;
+    color: white;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .sidebar .logo {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    background-color: white;
+    border-radius: 50%;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .sidebar h2 {
+    font-size: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  
+  .sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+  }
+  
+  .sidebar nav ul li {
+    margin-bottom: 15px;
+  }
+  
+  .sidebar nav ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 12px 20px;
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .sidebar nav ul li a:hover,
+  .sidebar nav ul li a.active {
+    background-color: #003580;
+    color: #ffd700;
+  }
+  
+  /* Main Content */
+  .main-content {
+    flex: 1;
+    padding: 40px;
+  }
+  
+  .main-content h1 {
+    color: #004aad;
+    margin-bottom: 30px;
+  }
+  
+  /* Applicants Table */
+  .applicants-container {
+    overflow-x: auto;
+  }
+  
+  .applicants-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .applicants-table th, .applicants-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .applicants-table th {
+    background-color: #004aad;
+    color: white;
+  }
+  
+  .status {
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .status.pending {
+    background-color: #ffc107;
+  }
+  
+  .status.shortlisted {
+    background-color: #28a745;
+  }
+  
+  .status.selected {
+    background-color: #007bff; /* Blue */
+  }
+  
+  .status.rejected {
+    background-color: #dc3545; /* Red */
+  }
+
+  .job-title-row {
+    background-color: #f0f8ff;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .filter-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 4px;
+}
+
+.filter-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 5;
+  margin-top: 5px;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.filter-dropdown select {
+  font-size: 14px;
+  padding: 4px;
+}
+
+.hidden {
+  display: none;
+}
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pagination-buttons a {
+  display: inline-block;
+  margin: 0 8px;
+  padding: 6px 12px;
+  background-color: #004aad;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.pagination-buttons a:hover {
+  background-color: #003580;
+}
+

@@ -1,0 +1,14 @@
+{% load static %}
+<aside class="sidebar">
+  <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
+  <h2>Admin Panel</h2>
+  <nav>
+    <ul>
+      <li><a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">Dashboard</a></li>
+      <li><a href="{% url 'manage_users' %}" class="{% if request.resolver_match.url_name == 'manage_users' %}active{% endif %}">Manage Users</a></li>
+      <li><a href="{% url 'view_system_logs' %}" class="{% if request.resolver_match.url_name == 'view_system_logs' %}active{% endif %}">View System Logs</a></li>
+      <li><a href="{% url 'monitor_activity' %}" class="{% if request.resolver_match.url_name == 'monitor_activity' %}active{% endif %}">Monitor Activity</a></li>
+      <li><a href="{% url 'logout' %}">Logout</a></li>
+    </ul>
+  </nav>
+</aside>

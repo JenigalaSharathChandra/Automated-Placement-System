@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View Jobs | Student</title>
+  <link rel="stylesheet" href="{% static 'css/view_jobs.css' %}">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
+      <h2>Student Panel</h2>
+      <nav>
+        <ul>
+          <li><a href="{% url 'student_dashboard' %}">Dashboard</a></li>
+          <li><a href="{% url 'view_jobs' %}" class="active">View Jobs</a></li>
+          <li><a href="{% url 'applied_jobs' %}">Applied Jobs</a></li>
+          <li><a href="{% url 'upcoming_interviews' %}">Upcoming Interviews</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <h1>Available Jobs 💼</h1>
+
+      <!-- Filter Form -->
+      <form method="get" class="filter-form">
+        <select name="sort_by">
+          <option value="">Sort By</option>
+          <option value="title_asc" {% if sort_by == "title_asc" %}selected{% endif %}>Title A–Z</option>
+          <option value="title_desc" {% if sort_by == "title_desc" %}selected{% endif %}>Title Z–A</option>
+          <option value="vacancies_asc" {% if sort_by == "vacancies_asc" %}selected{% endif %}>Vacancies Low–High</option>
+          <option value="vacancies_desc" {% if sort_by == "vacancies_desc" %}selected{% endif %}>Vacancies High–Low</option>
+        </select>
+        <input type="text" name="title" placeholder="Search title..." value="{{ title_query }}">
+        <input type="text" name="company" placeholder="Company name..." value="{{ company_query }}">
+        <input type="number" name="vacancies" placeholder="Min vacancies" value="{{ min_vacancies }}">
+        <button type="submit">Apply Filters</button>
+      </form>
+
+      <!-- Job Cards Grid -->
+      {% if page_obj %}
+        <div class="job-grid">
+          {% for job in page_obj %}
+            <div class="job-card">
+              <div class="job-card-body">
+                <h2>{{ job.title }}</h2>
+                <p><strong>Company:</strong> {{ job.recruiter.company_name }}</p>
+                <p><strong>Description:</strong> {{ job.description }}</p>
+                <p><strong>Criteria:</strong> {{ job.criteria }}</p>
+                <p><strong>Vacancies:</strong> {{ job.vacancies }}</p>
+              </div>
+              <div class="job-card-footer">
+                {% if job.id in applied_job_ids %}
+                  <button class="apply-btn disabled" disabled>Already Applied</button>
+                {% else %}
+                  <form method="post" action="{% url 'apply_job' job.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="apply-btn">Apply</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No jobs available right now.</p>
+      {% endif %}
+
+      <!-- Pagination -->
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a href="?page=1">First</a>
+          <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">Next</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+      </div>
+    </main>
+  </div>
+</body>
+</html>

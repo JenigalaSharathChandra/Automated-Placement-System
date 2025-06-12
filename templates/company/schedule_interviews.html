@@ -1,0 +1,354 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Schedule Interviews | Recruiter</title>
+  <link rel="stylesheet" href="{% static 'css/schedule_interviews.css' %}">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
+      <h2>Recruiter Panel</h2>
+      <nav>
+        <ul>
+          <li><a href="/company/dashboard/">Dashboard</a></li>
+          <li><a href="/company/post-job/">Post Jobs</a></li>
+          <li><a href="/company/view-applicants/">View Applicants</a></li>
+          <li><a href="/company/schedule-interviews/" class="active">Schedule Interviews</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <h1>Schedule Interviews 📅</h1>
+
+      <h2>Shortlisted Candidates</h2>
+      {% if applications %}
+        <table class="applicants-table">
+          <thead>
+            <tr>
+              <th>Candidate</th>
+              <th>Job</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for application in applications %}
+              <tr>
+                <td>{{ application.student.user.username }}</td>
+                <td>{{ application.job.title }}</td>
+                <td>{{ application.status }}</td>
+                <td>
+                  <button class="schedule-btn" onclick="openSchedulePopup('{{ application.id }}', '{{ application.student.user.username }}')">Schedule</button>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No shortlisted candidates available.</p>
+      {% endif %}
+
+      <hr>
+      <h2>Scheduled Interviews</h2>
+      {% if interviews %}
+        <table class="applicants-table">
+          <thead>
+            <tr>
+              <th>Candidate</th>
+              <th>Job</th>
+              <th>Date & Time</th>
+              <th>Mode</th>
+              <th>Meeting Link</th>
+              <th>Notes</th>
+              <th>Status</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Inside your existing Scheduled Interviews section -->
+            {% for interview in interviews %}
+            <tr>
+              <td>{{ interview.application.student.user.username }}</td>
+              <td>{{ interview.application.job.title }}</td>
+              <td>{{ interview.scheduled_at }}</td>
+              <td>{% if interview.meeting_link %}Online{% else %}Offline{% endif %}</td>
+              <td>
+                {% if interview.meeting_link %}
+                  <a href="{{ interview.meeting_link }}" target="_blank">Join</a>
+                {% else %}-{% endif %}
+              </td>
+              <td>{{ interview.notes }}</td>
+              <td>
+                <select onchange="updateInterviewStatus('{{ interview.id }}', this.value)"
+                  class="status-dropdown status-{{ interview.status }}">
+                  <option value="pending" {% if interview.status == 'pending' %}selected{% endif %}>Pending</option>
+                  <option value="completed" {% if interview.status == 'completed' %}selected{% endif %}>Completed</option>
+                </select>
+              </td>
+              <td>
+                <button class="edit-btn"
+                        onclick="openEditModal('{{ interview.id }}',
+                                              '{{ interview.scheduled_at|date:'Y-m-d\\TH:i' }}',
+                                              '{{ interview.meeting_link }}',
+                                              `{{ interview.notes|escapejs }}`)">
+                  ✏️ Edit
+                </button>
+                <td>
+                  <button class="delete-btn" onclick="openDeleteModal('{{ interview.id }}')">🗑 Delete</button>
+                </td>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if interviews.has_other_pages %}
+          <div class="pagination">
+            {% if interviews.has_previous %}
+              <a href="?page={{ interviews.previous_page_number }}">&laquo; Previous</a>
+            {% endif %}
+
+            <span class="current-page">
+              Page {{ interviews.number }} of {{ interviews.paginator.num_pages }}
+            </span>
+
+            {% if interviews.has_next %}
+              <a href="?page={{ interviews.next_page_number }}">Next &raquo;</a>
+            {% endif %}
+          </div>
+        {% endif %}
+
+      {% else %}
+        <p>No interviews scheduled yet.</p>
+      {% endif %}
+    </main>
+  </div>
+      <!-- Edit Interview Modal -->
+      <div id="editInterviewModal" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            Edit Interview
+            <span class="close-btn" onclick="closeEditModal()">×</span>
+          </div>
+      
+          <form id="editInterviewForm">
+            {% csrf_token %}
+            <input type="hidden" id="editInterviewId" name="interview_id">
+      
+            <div class="form-group">
+              <label for="editScheduledAt">Scheduled Time</label>
+              <input type="datetime-local" id="editScheduledAt" name="scheduled_at" required>
+            </div>
+      
+            <div class="form-group">
+              <label for="editMeetingLink">Meeting Link</label>
+              <input type="url" id="editMeetingLink" name="meeting_link">
+            </div>
+      
+            <div class="form-group">
+              <label for="editNotes">Notes</label>
+              <textarea id="editNotes" name="notes"></textarea>
+            </div>
+      
+            <button type="submit" class="schedule-btn">Save Changes</button>
+          </form>
+        </div>
+      </div>
+      
+
+  <!-- Modal Popup -->
+  <div id="schedulePopup" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span id="popupTitle">Schedule Interview</span>
+        <span class="close-btn" onclick="closePopup()">×</span>
+      </div>
+      <form id="popupForm">
+        {% csrf_token %}
+        <input type="hidden" id="popupAppId" name="application_id">
+
+        <div class="form-group">
+          <label for="popupScheduledAt">Scheduled Time</label>
+          <input type="datetime-local" id="popupScheduledAt" name="scheduled_at" required>
+        </div>
+
+        <div class="form-group">
+          <label for="popupMeetingLink">Meeting Link</label>
+          <input type="url" id="popupMeetingLink" name="meeting_link" placeholder="https://meet...">
+        </div>
+
+        <div class="form-group">
+          <label for="popupNotes">Notes</label>
+          <textarea id="popupNotes" name="notes" placeholder="Interview notes..."></textarea>
+        </div>
+
+        <button type="submit" class="schedule-btn">Schedule Interview</button>
+      </form>
+    </div>
+  </div>
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteInterviewModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        Confirm Deletion
+        <span class="close-btn" onclick="closeDeleteModal()">×</span>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="deleteInterviewId">
+        <p>Are you sure you want to delete this interview?</p>
+        <div class="modal-actions">
+          <button id="confirmDeleteBtn" class="delete-btn danger">Yes, Delete</button>
+          <button onclick="closeDeleteModal()" class="cancel-btn">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include this JavaScript at bottom of the same file -->
+  <script>
+  function openSchedulePopup(appId, username) {
+    document.getElementById("popupAppId").value = appId;
+    document.getElementById("popupTitle").innerText = "Schedule Interview for " + username;
+    document.getElementById("schedulePopup").classList.remove("hidden");
+  }
+
+  function closePopup() {
+    document.getElementById("schedulePopup").classList.add("hidden");
+  }
+
+  document.getElementById("popupForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const appId = document.getElementById("popupAppId").value;
+    const scheduledAt = document.getElementById("popupScheduledAt").value;
+    const meetingLink = document.getElementById("popupMeetingLink").value;
+    const notes = document.getElementById("popupNotes").value;
+
+    fetch(`/company/schedule-interview/${appId}/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+      },
+      body: JSON.stringify({
+        scheduled_at: scheduledAt,
+        meeting_link: meetingLink,
+        notes: notes
+      })
+    })
+    .then(response => {
+      if (response.ok) {
+        alert("Interview scheduled successfully!");
+        closePopup();
+        window.location.reload();
+      } else {
+        alert("Error scheduling interview.");
+      }
+    });
+  });
+  </script>
+  <script>
+    function openEditModal(id, scheduledAt, meetingLink, notes) {
+      document.getElementById('editInterviewId').value = id;
+      document.getElementById('editScheduledAt').value = scheduledAt;
+      document.getElementById('editMeetingLink').value = meetingLink || '';
+      document.getElementById('editNotes').value = notes || '';
+      document.getElementById('editInterviewModal').classList.remove('hidden');
+    }
+    
+    function closeEditModal() {
+      document.getElementById('editInterviewModal').classList.add('hidden');
+    }
+    
+    document.getElementById('editInterviewForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const interviewId = document.getElementById('editInterviewId').value;
+      const scheduledAt = document.getElementById('editScheduledAt').value;
+      const meetingLink = document.getElementById('editMeetingLink').value;
+      const notes = document.getElementById('editNotes').value;
+    
+      fetch(`/company/edit-interview/${interviewId}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({ scheduled_at: scheduledAt, meeting_link: meetingLink, notes: notes })
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Interview updated!');
+          closeEditModal();
+          location.reload();
+        } else {
+          alert('Failed to update.');
+        }
+      });
+    });
+  </script>
+  <script>
+    function updateInterviewStatus(interviewId, newStatus) {
+      fetch(`/update-interview-status/${interviewId}/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({ status: newStatus })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert("Status updated!");
+
+          // Update dropdown class dynamically
+          const dropdown = document.querySelector(`select[onchange*="${interviewId}"]`);
+          dropdown.classList.remove("status-pending", "status-completed");
+          dropdown.classList.add(`status-${newStatus}`);
+        } else {
+          alert("Failed to update status: " + data.error);
+        }
+      });
+    }
+</script>
+<script>
+  function openDeleteModal(interviewId) {
+    document.getElementById("deleteInterviewId").value = interviewId;
+    document.getElementById("deleteInterviewModal").classList.remove("hidden");
+  }
+
+  function closeDeleteModal() {
+    document.getElementById("deleteInterviewModal").classList.add("hidden");
+  }
+
+  document.getElementById("confirmDeleteBtn").addEventListener("click", function () {
+    const interviewId = document.getElementById("deleteInterviewId").value;
+
+    fetch(`/company/delete-interview/${interviewId}/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          alert("Interview deleted successfully!");
+          closeDeleteModal();
+          location.reload();
+        } else {
+          alert("Failed to delete interview: " + data.error);
+        }
+      });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recruiter Dashboard</title>
+  <link rel="stylesheet" href="{% static 'css/company.css' %}">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
+      <h2>Recruiter Panel</h2>
+      <nav>
+        <ul>
+          <li><a href="{% url 'company_dashboard' %}" class="active">Dashboard</a></li>
+          <li><a href="{% url 'post_job' %}">Post Jobs</a></li>
+          <li><a href="{% url 'view_applicants' %}">View Applicants</a></li>
+          <li><a href="{% url 'schedule_interviews' %}">Schedule Interviews</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </nav>      
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <h1>Welcome, {{ user.username }} 👋</h1>
+      <p>Here’s your quick overview as a recruiter.</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h3>Jobs Posted</h3>
+          <p>{{ total_jobs }} active listings</p>
+        </div>
+
+        <div class="card">
+          <h3>Applications Received</h3>
+          <p>{{ total_applications }} new applicants</p>
+        </div>
+
+        <div class="card">
+          <h3>Pending Applications</h3>
+          <p>{{ pending_applications }} awaiting review</p>
+        </div>
+
+        <div class="card">
+          <h3>Interviews Scheduled</h3>
+          <p>{{ upcoming_interviews }} upcoming interviews</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

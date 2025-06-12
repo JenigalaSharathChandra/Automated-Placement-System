@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Applied Jobs | Student</title>
+  <link rel="stylesheet" href="{% static 'css/applied_jobs.css' %}">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
+      <h2>Student Panel</h2>
+      <nav>
+        <ul>
+          <li><a href="/student/dashboard/">Dashboard</a></li>
+          <li><a href="/student/view-jobs/">View Jobs</a></li>
+          <li><a href="/student/applied-jobs/" class="active">Applied Jobs</a></li>
+          <li><a href="{% url 'upcoming_interviews' %}">Upcoming Interviews</a></li>
+          <li><a href="/student/profile/">Profile</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <h1>Applied Jobs 📄</h1>
+
+      <div class="applied-container">
+        <table class="applied-table">
+          <thead>
+            <tr>
+              <th>Job Title</th>
+              <th>Company</th>
+              <th>Application Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if page_obj %}
+              {% for application in page_obj %}
+                <tr>
+                  <td>{{ application.job.title }}</td>
+                  <td>{{ application.job.recruiter.company_name|default:application.job.recruiter.user.username }}</td>
+                  <td>
+                    <span class="status {{ application.status }}">
+                      {{ application.status|capfirst }}
+                    </span>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="3">You have not applied to any jobs yet.</td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="3">No applications found.</td>
+              </tr>
+            {% endif %}
+          </tbody>          
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a href="?page=1">First</a>
+          <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">Next</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+      </div>
+    </main>
+  </div>
+</body>
+</html>

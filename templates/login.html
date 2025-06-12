@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | Campus Recruitment System</title>
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <!-- ✅ Logo inserted here -->
+      <img src="{% static 'images/logo.png' %}" alt="Campus Logo" class="login-logo">
+
+      <h2 class="title">Welcome Back!</h2>
+      <p class="subtitle">Login to your account</p>
+      <form method="post">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Username or Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+      <p class="register-link">Don't have an account? <a href="/register/">Register</a></p>
+    </div>
+  </div>
+</body>
+</html>

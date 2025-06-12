@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Profile</title>
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f9fc;
+    }
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 220px;
+      background-color: #004aad;
+      color: white;
+      padding: 20px;
+    }
+    .sidebar h2 {
+      margin-top: 10px;
+    }
+    .sidebar nav ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .sidebar nav ul li {
+      margin: 15px 0;
+    }
+    .sidebar nav ul li a {
+      color: white;
+      text-decoration: none;
+    }
+    .sidebar nav ul li a.active {
+      font-weight: bold;
+      text-decoration: underline;
+    }
+    .logo {
+      width: 100px;
+      height: auto;
+    }
+    .main-content {
+      flex-grow: 1;
+      padding: 40px;
+    }
+    .alert.success {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-left: 5px solid #28a745;
+      border-radius: 5px;
+    }
+    .profile-view {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 700px;
+      margin: 0 auto;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    .profile-view p {
+      margin-bottom: 12px;
+    }
+    .profile-view strong {
+      display: inline-block;
+      width: 140px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group textarea, .form-group input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .hidden {
+      display: none;
+    }
+    .save-btn {
+      background-color: #004aad;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .profile-view h3 {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #003366;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 4px;
+    }
+    .profile-view ul {
+      padding-left: 20px;
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+    .profile-view li {
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
+      <h2>Student Panel</h2>
+      <nav>
+        <ul>
+          <li><a href="/student/dashboard/">Dashboard</a></li>
+          <li><a href="/student/view-jobs/">View Jobs</a></li>
+          <li><a href="/student/applied-jobs/">Applied Jobs</a></li>
+          <li><a href="{% url 'upcoming_interviews' %}">Upcoming Interviews</a></li>
+          <li><a href="/student/profile/" class="active">Profile</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <h1>My Profile <i class="fa fa-user"></i></h1>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert success">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <div id="profileView" class="profile-view">
+        <p><strong>Full Name:</strong> {{ student.name }}</p>
+        <p><strong>Email:</strong> {{ student.user.email }}</p>
+        <p><strong>Skills:</strong> {{ student.skills }}</p>
+        <p><strong>GPA:</strong> {{ student.gpa }}</p>
+        <p><strong>LinkedIn:</strong>
+          {% if student.linkedin %}
+            <a href="{{ student.linkedin }}" target="_blank">{{ student.linkedin }}</a>
+          {% else %}Not provided{% endif %}
+        </p>
+        <p><strong>GitHub:</strong>
+          {% if student.github %}
+            <a href="{{ student.github }}" target="_blank">{{ student.github }}</a>
+          {% else %}Not provided{% endif %}
+        </p>
+
+        <div id="moreDetails" class="hidden">
+          <h3>Bio</h3>
+          <p>{{ student.bio|linebreaksbr|default:"No bio yet." }}</p>
+
+          <h3>Achievements</h3>
+          <ul>
+            {% if achievements_list %}
+              {% for line in achievements_list %}
+                <li>{{ line }}</li>
+              {% endfor %}
+            {% else %}
+              <li>Not added</li>
+            {% endif %}
+          </ul>
+
+          <h3>Projects</h3>
+          <ul>
+            {% if projects_list %}
+              {% for line in projects_list %}
+                <li>{{ line }}</li>
+              {% endfor %}
+            {% else %}
+              <li>Not added</li>
+            {% endif %}
+          </ul>
+
+          <h3>Certifications</h3>
+          <ul>
+            {% if certifications_list %}
+              {% for line in certifications_list %}
+                <li>{{ line }}</li>
+              {% endfor %}
+            {% else %}
+              <li>Not added</li>
+            {% endif %}
+          </ul>
+        </div>
+
+        <div class="button-group">
+          <button onclick="toggleForm()" class="save-btn">Update Profile</button>
+          <button onclick="toggleDetails()" class="save-btn" id="viewMoreBtn">View More</button>
+        </div>
+      </div>
+
+      <form id="profileForm" class="profile-form hidden" method="post">
+        {% csrf_token %}
+        <div class="form-group"><label for="name">Full Name</label><input type="text" id="name" name="name" value="{{ student.name }}"></div>
+        <div class="form-group"><label for="email">Email Address</label><input type="email" id="email" name="email" value="{{ student.user.email }}" readonly></div>
+        <div class="form-group"><label for="skills">Skills</label><input type="text" id="skills" name="skills" value="{{ student.skills }}"></div>
+        <div class="form-group"><label for="gpa">GPA</label><input type="text" id="gpa" name="gpa" value="{{ student.gpa }}"></div>
+        <div class="form-group"><label for="linkedin">LinkedIn URL</label><input type="url" id="linkedin" name="linkedin" value="{{ student.linkedin }}"></div>
+        <div class="form-group"><label for="github">GitHub URL</label><input type="url" id="github" name="github" value="{{ student.github }}"></div>
+        <div class="form-group"><label for="bio">Short Bio</label><textarea id="bio" name="bio" rows="3">{{ student.bio }}</textarea></div>
+        <div class="form-group"><label for="achievements">Achievements</label><textarea id="achievements" name="achievements" rows="3">{{ student.achievements }}</textarea></div>
+        <div class="form-group"><label for="projects">Projects</label><textarea id="projects" name="projects" rows="3">{{ student.projects }}</textarea></div>
+        <div class="form-group"><label for="certifications">Certifications</label><textarea id="certifications" name="certifications" rows="3">{{ student.certifications }}</textarea></div>
+        <button type="submit" class="save-btn">Save Profile</button>
+      </form>
+    </main>
+  </div>
+
+  <script>
+    function toggleForm() {
+      document.getElementById("profileForm").classList.toggle("hidden");
+      document.getElementById("profileView").classList.toggle("hidden");
+    }
+    function toggleDetails() {
+      const details = document.getElementById("moreDetails");
+      const btn = document.getElementById("viewMoreBtn");
+      const isHidden = details.classList.contains("hidden");
+      details.classList.toggle("hidden");
+      btn.textContent = isHidden ? "View Less" : "View More";
+    }
+  </script>
+</body>
+</html>

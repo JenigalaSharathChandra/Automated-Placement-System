@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Schedule Interview</title>
+  <link rel="stylesheet" href="{% static 'css/company.css' %}">
+  <style>
+    .form-container {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 1rem;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.7rem 1.5rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .alert {
+      padding: 12px 20px;
+      background-color: #d4edda;
+      color: #155724;
+      border-left: 5px solid #28a745;
+      border-radius: 6px;
+      margin: 1rem auto;
+      max-width: 600px;
+      transition: opacity 0.5s ease;
+      opacity: 1;
+    }
+    .alert.fade-out {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+
+  {% if messages %}
+    <div class="flash-messages">
+      {% for message in messages %}
+        <div class="alert alert-success">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="form-container">
+    <h2>Schedule Interview for {{ application.student.user.username }}</h2>
+    <form method="post">
+      {% csrf_token %}
+      <label for="scheduled_at">Scheduled Time</label>
+      <input type="datetime-local" id="scheduled_at" name="scheduled_at" required>
+
+      <label for="meeting_link">Meeting Link</label>
+      <input type="url" id="meeting_link" name="meeting_link" placeholder="https://meet...">
+
+      <label for="notes">Notes</label>
+      <textarea id="notes" name="notes" rows="4" placeholder="Interview notes..."></textarea>
+
+      <button type="submit">Schedule Interview</button>
+    </form>
+  </div>
+  <script>
+    // Fade out flash messages after 4 seconds
+    setTimeout(() => {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(alert => {
+        alert.classList.add('fade-out');
+        setTimeout(() => alert.style.display = 'none', 500); // wait for fade transition
+      });
+    }, 4000);
+  </script>  
+</body>
+</html>
