@@ -5,8 +5,45 @@
   <meta charset="UTF-8">
   <title>Register | Campus Recruitment System</title>
   <link rel="stylesheet" href="{% static 'css/register.css' %}">
+  <style>
+    .top-nav {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+    }
+
+    .nav-button {
+      background-color: #004aad;
+      color: white;
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      margin-left: 10px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .contact-section {
+      margin-top: 40px;
+      padding: 20px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
+
+  <!-- 🔗 Top-right nav -->
+  <div class="top-nav">
+    <a href="{% url 'home' %}" class="nav-button">Home</a>
+    <a href="#contact" class="nav-button">Contact</a>
+  </div>
+
   <div class="login-wrapper">
     <div class="login-card">
       <img src="{% static 'images/logo.png' %}" alt="Campus Logo" class="login-logo">
@@ -40,7 +77,15 @@
     </div>
   </div>
 
- <script>
+  <!-- 📞 Contact Section -->
+  <div id="contact" class="contact-section">
+    <h3>Contact Us</h3>
+    <p><strong>Email:</strong> 245122750306@mvsrec.edu.in</p>
+    <p><strong>Phone:</strong> +91 8309540796</p>
+    <p><strong>Address:</strong> MVSR College, Hyderabad, India</p>
+  </div>
+
+  <script>
     document.addEventListener("DOMContentLoaded", function () {
       const roleSelect = document.getElementById('role-select');
       const companyField = document.getElementById('company-name-field');
@@ -57,5 +102,6 @@
       toggleCompanyField();  // on page load
     });
   </script>
+
 </body>
 </html>
