@@ -7,72 +7,141 @@
   <title>Welcome to Campus Recruit</title>
   <link rel="stylesheet" href="{% static 'css/landing.css' %}">
   <style>
-    html {
-      scroll-behavior: smooth;
-    }
-    .fade-in {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-    }
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    html { scroll-behavior: smooth; }
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
     .back-to-top {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #004aad;
-      color: white;
-      padding: 10px 15px;
-      border-radius: 50%;
-      font-size: 18px;
-      text-align: center;
-      cursor: pointer;
-      display: none;
-      z-index: 1000;
+      position: fixed; bottom: 20px; right: 20px; background-color: #004aad;
+      color: white; padding: 10px 15px; border-radius: 50%; font-size: 18px;
+      text-align: center; cursor: pointer; display: none; z-index: 1000;
     }
-    .back-to-top:hover {
-      background-color: #003580;
+    .back-to-top:hover { background-color: #003580; }
+    .hero-banner {
+      background: url('{% static "images/hero-bg.jpg" %}') no-repeat center center/cover;
+      height: 100vh; position: relative; display: flex; align-items: center;
+      justify-content: center; text-align: center; color: white; flex-direction: column;
+    }
+    .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 0; }
+    .hero-text { position: relative; z-index: 1; max-width: 800px; padding: 20px; }
+    .hero-text h1 { font-size: 3rem; margin-bottom: 15px; }
+    .hero-text p.tagline { font-size: 1.5rem; font-style: italic; }
+    .hero-text p.desc { font-size: 1rem; margin-top: 10px; }
+    .hero-buttons { margin-top: 20px; z-index: 1; }
+    .hero-buttons .btn {
+      margin: 8px; padding: 10px 20px; font-size: 16px; background-color: #004aad;
+      color: white; border: none; border-radius: 5px; text-decoration: none; display: inline-block;
+    }
+   .hero-buttons .btn.secondary {
+      background-color: white;
+      color: #004aad; /* optional: ensures text stays visible */
+      border: 1px solid #004aad; /* optional: gives a clean outline */
+    }
+    .companies-section {
+      background-color: #f5f5f5; padding: 40px 20px; text-align: center;
+    }
+    .companies-section h2 {
+      font-size: 1.8rem; margin-bottom: 20px; color: #333;
+    }
+    .company-logos {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;
+    }
+    .company-logos img {
+      height: 50px;
+      transition: transform 0.3s ease;
+    }
+    .company-logos img:hover {
+      transform: scale(1.1);
     }
     @media (max-width: 768px) {
-      .hero-buttons .btn {
-        display: block;
-        margin: 10px auto;
-      }
-      .about-columns {
-        flex-direction: column;
-      }
-      .testimonial-cards {
-        flex-direction: column;
-      }
+      .hero-text h1 { font-size: 2rem; }
+      .hero-text p.tagline { font-size: 1.2rem; }
+      .hero-buttons .btn { display: block; margin: 10px auto; }
+    }
+    .scrolling-logos-wrapper {
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+    }
+    .scrolling-logos {
+      display: inline-block;
+      animation: scroll-logos 30s linear infinite;
+    }
+    .scrolling-logos:hover {
+      animation-play-state: paused;
+    }
+    .scrolling-logos img {
+      height: 50px;
+      margin: 0 25px;
+      vertical-align: middle;
+      transition: transform 0.3s ease;
+    }
+    .scrolling-logos img:hover {
+      transform: scale(1.1);
+    }
+    @keyframes scroll-logos {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
   </style>
 </head>
 <body>
-    <header class="landing-header">
-        <div class="left">
-            <img src="{% static 'images/logo.png' %}" class="logo" alt="Campus Recruit Logo">
-        </div>
-        <nav class="landing-nav">
-            <a href="#about">About</a>
-            <a href="#how">How It Works</a>
-            <a href="#testimonials">Testimonials</a>
-            <a href="#contact">Contact</a>
-            <a href="{% url 'register' %}">Register</a>
-        </nav>
-    </header>
+  <header class="landing-header">
+    <div class="left">
+      <img src="{% static 'images/logo.png' %}" class="logo" alt="Campus Recruit Logo">
+    </div>
+    <nav class="landing-nav">
+      <a href="#about">About</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#testimonials">Testimonials</a>
+      <a href="#contact">Contact</a>
+      <a href="{% url 'register' %}">Register</a>
+    </nav>
+  </header>
 
-  <section class="hero-section fade-in" id="top">
-    <div class="hero-content">
-      <h1>Connecting Talent to Opportunity 🎓</h1>
-      <p>Welcome to Campus Recruit – the one-stop platform for students, recruiters, and coordinators to collaborate and succeed in the hiring journey.</p>
-      <div class="hero-buttons">
-        <a href="{% url 'login' %}?role=student" class="btn">Student Login</a>
-        <a href="{% url 'login' %}?role=recruiter" class="btn">Recruiter Login</a>
-        <a href="{% url 'login' %}?role=coordinator" class="btn secondary">Coordinator Login</a>
-        <a href="{% url 'login' %}?role=admin" class="btn secondary">Admin Login</a>
+  <!-- New Hero Banner -->
+  <section class="hero-banner">
+    <div class="hero-overlay"></div>
+    <div class="hero-text">
+      <h1>Automated Recruitment System</h1>
+      <p class="tagline">Automate the Process, Accelerate the Talent</p>
+      <p class="desc">Our platform simplifies campus hiring by enabling seamless collaboration between students, recruiters, and coordinators – all in one place.</p>
+    </div>
+    <div class="hero-buttons">
+      <a href="{% url 'login' %}?role=student" class="btn">Student Login</a>
+      <a href="{% url 'login' %}?role=recruiter" class="btn">Recruiter Login</a>
+      <a href="{% url 'login' %}?role=coordinator" class="btn secondary">Coordinator Login</a>
+      <a href="{% url 'login' %}?role=admin" class="btn secondary">Admin Login</a>
+    </div>
+  </section>
+
+  <!-- Company Logos Section -->
+  <section class="companies-section">
+    <h2>Companies that trust us</h2>
+    <div class="scrolling-logos-wrapper">
+      <div class="scrolling-logos">
+        <!-- First loop -->
+        <img src="{% static 'images/google.png' %}" alt="Google">
+        <img src="{% static 'images/microsoft.png' %}" alt="Microsoft">
+        <img src="{% static 'images/tcs.png' %}" alt="TCS">
+        <img src="{% static 'images/infosys.png' %}" alt="Infosys">
+        <img src="{% static 'images/wipro.png' %}" alt="Wipro">
+        <img src="{% static 'images/amazon.png' %}" alt="Amazon">
+        <img src="{% static 'images/accenture.png' %}" alt="Accenture">
+        <img src="{% static 'images/cognizant.png' %}" alt="Cognizant">
+        <img src="{% static 'images/hcl.png' %}" alt="HCL">
+        <img src="{% static 'images/capgemini.png' %}" alt="Capgemini">
+        
+        <!-- Duplicate for smooth looping -->
+        <img src="{% static 'images/google.png' %}" alt="Google">
+        <img src="{% static 'images/microsoft.png' %}" alt="Microsoft">
+        <img src="{% static 'images/tcs.png' %}" alt="TCS">
+        <img src="{% static 'images/infosys.png' %}" alt="Infosys">
+        <img src="{% static 'images/wipro.png' %}" alt="Wipro">
+        <img src="{% static 'images/amazon.png' %}" alt="Amazon">
+        <img src="{% static 'images/accenture.png' %}" alt="Accenture">
+        <img src="{% static 'images/cognizant.png' %}" alt="Cognizant">
+        <img src="{% static 'images/hcl.png' %}" alt="HCL">
+        <img src="{% static 'images/capgemini.png' %}" alt="Capgemini">
       </div>
     </div>
   </section>
@@ -93,6 +162,7 @@
     <p class="credit">Made with ❤️ by Batch 4 CSE-DS</p>
   </section>
 
+  <!-- How It Works Section -->
   <section class="how-it-works fade-in" id="how-it-works">
     <div class="container">
       <h2>How It Works</h2>
@@ -113,6 +183,7 @@
     </div>
   </section>
 
+  <!-- Testimonials Section -->
   <section class="testimonials fade-in" id="testimonials">
     <h2>What People Are Saying</h2>
     <div class="testimonial-cards">
@@ -131,6 +202,7 @@
     </div>
   </section>
 
+  <!-- Contact Section -->
   <footer class="landing-footer fade-in" id="contact">
     <div class="container">
       <p><strong>Contact Us:</strong> 245122750306@mvsrec.edu.in | +91-8309540796</p>
@@ -151,38 +223,26 @@
     }, { threshold: 0.1 });
     fadeElements.forEach(el => observer.observe(el));
 
-    // Back to top button
     const backToTopBtn = document.getElementById("backToTop");
     window.addEventListener("scroll", () => {
-      if (window.scrollY > 300) {
-        backToTopBtn.style.display = "block";
+      backToTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
+    });
+
+    let lastScrollY = window.scrollY;
+    const header = document.querySelector(".landing-header");
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > lastScrollY) {
+        header.classList.add("hide-header");
       } else {
-        backToTopBtn.style.display = "none";
+        header.classList.remove("hide-header");
+      }
+      lastScrollY = window.scrollY;
+    });
+    document.addEventListener("mousemove", (e) => {
+      if (e.clientY < 60) {
+        header.classList.remove("hide-header");
       }
     });
   </script>
-  <script>
-  let lastScrollY = window.scrollY;
-  const header = document.querySelector(".landing-header");
-
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > lastScrollY) {
-      // Scrolling down
-      header.classList.add("hide-header");
-    } else {
-      // Scrolling up
-      header.classList.remove("hide-header");
-    }
-    lastScrollY = window.scrollY;
-  });
-
-  // Optional: Show header when hovering near top
-  document.addEventListener("mousemove", (e) => {
-    if (e.clientY < 60) {
-      header.classList.remove("hide-header");
-    }
-  });
-</script>
-
 </body>
 </html>
