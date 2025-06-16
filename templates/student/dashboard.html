@@ -5,24 +5,24 @@
   <meta charset="UTF-8">
   <title>Student Dashboard</title>
   <link rel="stylesheet" href="{% static 'css/student.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="dashboard-container">
     <!-- Sidebar -->
     <aside class="sidebar">
       <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
-
       <h2>Student Panel</h2>
       <nav>
         <ul>
-          <li><a href="{% url 'student_dashboard' %}" class="{% if request.path == '/student/dashboard/' %}active{% endif %}">Dashboard</a></li>
-          <li><a href="{% url 'view_jobs' %}" class="{% if request.path == '/student/view-jobs/' %}active{% endif %}">View Jobs</a></li>
-          <li><a href="{% url 'applied_jobs' %}" class="{% if request.path == '/student/applied-jobs/' %}active{% endif %}">Applied Jobs</a></li>
+          <li><a href="{% url 'student_dashboard' %}" class="active">Dashboard</a></li>
+          <li><a href="{% url 'view_jobs' %}">View Jobs</a></li>
+          <li><a href="{% url 'applied_jobs' %}">Applied Jobs</a></li>
           <li><a href="{% url 'upcoming_interviews' %}">Upcoming Interviews</a></li>
-          <li><a href="{% url 'profile' %}" class="{% if request.path == '/student/profile/' %}active{% endif %}">Profile</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
           <li><a href="{% url 'logout' %}">Logout</a></li>
         </ul>
-      </nav>      
+      </nav>
     </aside>
 
     <!-- Main Content -->
@@ -30,27 +30,83 @@
       <h1>Welcome, {{ user.username }} 👋</h1>
       <p>Here’s your quick summary and options.</p>
 
-      <div class="dashboard-cards">
-      <div class="card blue">
-        <h3>Total Jobs</h3>
-        <p>{{ total_jobs }}</p>
+      <div class="card-grid">
+        <div class="card total-jobs">
+          <h3>Total Jobs</h3>
+          <p>{{ total_jobs }}</p>
+        </div>
+        <div class="card jobs-applied">
+          <h3>Jobs Applied</h3>
+          <p>{{ applied_jobs }}</p>
+        </div>
+        <div class="card upcoming-interviews">
+          <h3>Upcoming Interviews</h3>
+          <p>{{ upcoming_interviews }}</p>
+        </div>
       </div>
-      <div class="card green">
-        <h3>Jobs Applied</h3>
-        <p>{{ applied_jobs }}</p>
+
+      <div class="bottom-section">
+        <div class="profile-completion">
+          <h3>📈 Profile Completion</h3>
+          <canvas id="profileChart" class="pie-chart"></canvas>
+        </div>
+
+        <div class="upcoming-card">
+          <h3>📅 Upcoming Interviews</h3>
+            {% if company_name and job_title %}
+              <p>Next interview is for <strong>{{ job_title }}</strong> at <strong>{{ company_name }}</strong>.</p>
+            {% else %}
+              <p>No upcoming interviews scheduled. Check the “Upcoming Interviews” section for updates.</p>
+            {% endif %}
+        </div>
       </div>
-      <div class="card orange">
-        <h3>Upcoming Interviews</h3>
-        <p>{{ upcoming_interviews }}</p>
-      </div>
-    </div>
     </main>
   </div>
+
   <script>
-  // This replaces the current history entry (login/register) with the dashboard itself
-  if (window.history.replaceState) {
-    window.history.replaceState(null, '', window.location.href);
-  }
-</script>
+    const percentage = {{ profile_completion|default:0 }};
+
+    const centerTextPlugin = {
+      id: 'centerText',
+      beforeDraw(chart) {
+        const { width } = chart;
+        const { height } = chart;
+        const ctx = chart.ctx;
+        ctx.restore();
+
+        const fontSize = (height / 100).toFixed(2);
+        ctx.font = `${fontSize}em sans-serif`;
+        ctx.textBaseline = 'middle';
+
+        const text = `${percentage}%`;
+        const textX = Math.round((width - ctx.measureText(text).width) / 2);
+        const textY = height / 2;
+
+        ctx.fillText(text, textX, textY);
+        ctx.save();
+      }
+    };
+
+    const ctx = document.getElementById('profileChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Completed', 'Remaining'],
+        datasets: [{
+          data: [percentage, 100 - percentage],
+          backgroundColor: ['#004aad', '#e0e0e0'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        cutout: '75%',
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false }
+        }
+      },
+      plugins: [centerTextPlugin]
+    });
+  </script>
 </body>
 </html>

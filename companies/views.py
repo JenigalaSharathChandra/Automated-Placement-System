@@ -18,16 +18,33 @@ from django.core.exceptions import ObjectDoesNotExist
 @recruiter_required
 def company_dashboard(request):
     recruiter_profile = get_object_or_404(CompanyRecruiter, user=request.user)
+    
     total_jobs = Job.objects.filter(recruiter=recruiter_profile).count()
     total_applications = Application.objects.filter(job__recruiter=recruiter_profile).count()
     pending_applications = Application.objects.filter(job__recruiter=recruiter_profile, status='pending').count()
-    upcoming_interviews = Interview.objects.filter(application__job__recruiter=recruiter_profile, scheduled_at__gte=timezone.now()).count()
+    
+    upcoming_interviews = Interview.objects.filter(
+        application__job__recruiter=recruiter_profile,
+        scheduled_at__gte=timezone.now()
+    ).select_related('application__student__user', 'application__job').order_by('scheduled_at')[:3]
+
+    # Pie chart counts
+    selected = Application.objects.filter(job__recruiter=recruiter_profile, status='selected').count()
+    rejected = Application.objects.filter(job__recruiter=recruiter_profile, status='rejected').count()
+    shortlisted = Application.objects.filter(job__recruiter=recruiter_profile, status='shortlisted').count()
+    pending = Application.objects.filter(job__recruiter=recruiter_profile, status='pending').count()
 
     return render(request, 'company/dashboard.html', {
         'total_jobs': total_jobs,
         'total_applications': total_applications,
         'pending_applications': pending_applications,
         'upcoming_interviews': upcoming_interviews,
+        'status_counts': {
+            'selected': selected,
+            'rejected': rejected,
+            'shortlisted': shortlisted,
+            'pending': pending,
+        }
     })
 
 @recruiter_required

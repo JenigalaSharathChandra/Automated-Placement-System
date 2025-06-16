@@ -5,19 +5,44 @@ from django.core.paginator import Paginator
 from accounts.decorators import student_required
 from accounts.models import Job, Application, Interview, Student
 
+# Utility to calculate profile completion
+def calculate_profile_completion(student):
+    fields = [
+        student.name, student.skills, student.linkedin, student.github,
+        student.bio, student.achievements, student.projects, student.certifications,
+        student.gpa
+    ]
+    filled = sum(1 for field in fields if field)
+    return int((filled / len(fields)) * 100)
+
 @student_required
 def student_dashboard(request):
     student = Student.objects.get(user=request.user)
+
     total_jobs = Job.objects.filter(status='approved').count()
     applied_jobs = Application.objects.filter(student=student).count()
-    upcoming_interviews = Interview.objects.filter(
+    upcoming_interviews_count = Interview.objects.filter(
         application__student=student,
         scheduled_at__gte=timezone.now()
     ).count()
+
+    profile_completion = calculate_profile_completion(student)
+
+    upcoming_interview_obj = Interview.objects.filter(
+        application__student=student,
+        scheduled_at__gte=timezone.now()
+    ).select_related('application__job__recruiter').order_by('scheduled_at').first()
+
+    company_name = upcoming_interview_obj.application.job.recruiter.company_name if upcoming_interview_obj else None
+    job_title = upcoming_interview_obj.application.job.title if upcoming_interview_obj else None
+
     return render(request, 'student/dashboard.html', {
         'total_jobs': total_jobs,
         'applied_jobs': applied_jobs,
-        'upcoming_interviews': upcoming_interviews
+        'upcoming_interviews': upcoming_interviews_count,
+        'profile_completion': profile_completion,
+        'company_name': company_name,
+        'job_title': job_title,
     })
 
 @student_required
@@ -69,20 +94,24 @@ def apply_job(request, job_id):
     job = get_object_or_404(Job, id=job_id, status='approved')
     student = get_object_or_404(Student, user=request.user)
     existing_application = Application.objects.filter(student=student, job=job).first()
+
     if existing_application:
         messages.info(request, "You have already applied to this job.")
     else:
         Application.objects.create(student=student, job=job)
         messages.success(request, "Application submitted successfully.")
+
     return redirect('view_jobs')
 
 @student_required
 def applied_jobs(request):
     student = get_object_or_404(Student, user=request.user)
     applications = Application.objects.filter(student=student).select_related('job__recruiter')
+
     paginator = Paginator(applications, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
     return render(request, 'student/applied_jobs.html', {'page_obj': page_obj})
 
 @student_required
@@ -122,23 +151,22 @@ def profile(request):
         messages.success(request, "Profile updated successfully.")
         return redirect('profile')
 
-    # Split text areas into lists for the template (optional)
-    achievements_list = student.achievements.splitlines() if student.achievements else []
-    projects_list = student.projects.splitlines() if student.projects else []
-    certifications_list = student.certifications.splitlines() if student.certifications else []
-
     return render(request, 'student/profile.html', {
         'student': student,
-        'achievements_list': achievements_list,
-        'projects_list': projects_list,
-        'certifications_list': certifications_list,
+        'achievements_list': student.achievements.splitlines() if student.achievements else [],
+        'projects_list': student.projects.splitlines() if student.projects else [],
+        'certifications_list': student.certifications.splitlines() if student.certifications else [],
     })
 
 @student_required
 def upcoming_interviews(request):
     student = Student.objects.get(user=request.user)
-    interviews = Interview.objects.filter(application__student=student).select_related('application__job').order_by('scheduled_at')
+    interviews = Interview.objects.filter(
+        application__student=student
+    ).select_related('application__job').order_by('scheduled_at')
+
     paginator = Paginator(interviews, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
     return render(request, 'student/upcoming_interviews.html', {'page_obj': page_obj})

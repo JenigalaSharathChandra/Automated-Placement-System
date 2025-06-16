@@ -2,58 +2,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Recruiter Dashboard</title>
   <link rel="stylesheet" href="{% static 'css/company.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="dashboard-container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
-      <h2>Recruiter Panel</h2>
-      <nav>
-        <ul>
-          <li><a href="{% url 'company_dashboard' %}" class="active">Dashboard</a></li>
-          <li><a href="{% url 'post_job' %}">Post Jobs</a></li>
-          <li><a href="{% url 'view_applicants' %}">View Applicants</a></li>
-          <li><a href="{% url 'schedule_interviews' %}">Schedule Interviews</a></li>
-          <li><a href="{% url 'logout' %}">Logout</a></li>
-        </ul>
-      </nav>      
-    </aside>
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <img src="{% static 'images/logo.png' %}" class="logo" alt="Logo">
+    <h2>Recruiter Panel</h2>
+    <nav>
+      <ul>
+        <li><a href="{% url 'company_dashboard' %}" class="active">Dashboard</a></li>
+        <li><a href="{% url 'post_job' %}">Post Jobs</a></li>
+        <li><a href="{% url 'view_applicants' %}">View Applicants</a></li>
+        <li><a href="{% url 'schedule_interviews' %}">Schedule Interviews</a></li>
+        <li><a href="{% url 'logout' %}">Logout</a></li>
+      </ul>
+    </nav>
+  </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <h1>Welcome, {{ user.username }} 👋</h1>
-      <p>Here’s your quick overview as a recruiter.</p>
+  <!-- Main Content -->
+  <main class="main-content">
+    <h1>Welcome, {{ user.username }} 👋</h1>
+    <p>Here’s your quick overview as a recruiter.</p>
 
-      <div class="card-grid">
-        <div class="card">
-          <h3>Jobs Posted</h3>
-          <p>{{ total_jobs }} active listings</p>
+    <!-- Overview Cards -->
+    <div class="card-grid">
+      <div class="card border-left-blue">
+        <h3>Jobs Posted</h3>
+        <p>{{ total_jobs }} active listings</p>
+      </div>
+      <div class="card border-left-green">
+        <h3>Applications Received</h3>
+        <p>{{ total_applications }} new applicants</p>
+      </div>
+      <div class="card border-left-orange">
+        <h3>Pending Applications</h3>
+        <p>{{ pending_applications }} awaiting review</p>
+      </div>
+      <div class="card border-left-purple">
+        <h3>Interviews Scheduled</h3>
+        <p>{{ upcoming_interviews|length }} upcoming interviews</p>
+      </div>
+    </div>
+
+    <!-- Details Section -->
+    <div class="dashboard-section">
+      <!-- Status Pie Chart -->
+      <div class="status-chart">
+        <h3>Application Status Overview</h3>
+        <div style="width: 180px; height: 180px;">
+          <canvas id="statusPieChart" width="180" height="180"></canvas>
         </div>
-
-        <div class="card">
-          <h3>Applications Received</h3>
-          <p>{{ total_applications }} new applicants</p>
-        </div>
-
-        <div class="card">
-          <h3>Pending Applications</h3>
-          <p>{{ pending_applications }} awaiting review</p>
-        </div>
-
-        <div class="card">
-          <h3>Interviews Scheduled</h3>
-          <p>{{ upcoming_interviews }} upcoming interviews</p>
+        <div class="legend">
+          <div><span class="dot selected"></span> Selected</div>
+          <div><span class="dot shortlisted"></span> Shortlisted</div>
+          <div><span class="dot rejected"></span> Rejected</div>
+          <div><span class="dot pending"></span> Pending</div>
         </div>
       </div>
-    </main>
-  </div>
-  <script>
-  // This replaces the current history entry (login/register) with the dashboard itself
+
+      <!-- Upcoming Interviews -->
+      <div class="interview-box">
+        <h3>Upcoming Interviews</h3>
+        <ul>
+          {% for interview in upcoming_interviews %}
+            <li>
+              <strong>{{ interview.application.student.user.username }}</strong>
+              — {{ interview.application.job.title }}
+              @ {{ interview.scheduled_at|date:"M d, H:i" }}
+            </li>
+          {% empty %}
+            <li>No upcoming interviews</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Chart Script -->
+<script>
+  const ctx = document.getElementById('statusPieChart').getContext('2d');
+  const statusChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Selected', 'Shortlisted', 'Rejected', 'Pending'],
+      datasets: [{
+        label: 'Application Status',
+        data: [
+          {{ status_counts.selected }},
+          {{ status_counts.shortlisted }},
+          {{ status_counts.rejected }},
+          {{ status_counts.pending }}
+        ],
+        backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#007bff'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: false,
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+</script>
+
+<script>
   if (window.history.replaceState) {
     window.history.replaceState(null, '', window.location.href);
   }

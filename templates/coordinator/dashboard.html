@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <title>Coordinator Dashboard</title>
   <link rel="stylesheet" href="{% static 'css/coordinator.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="dashboard-container">
@@ -27,24 +28,82 @@
       <h1>Welcome, {{ user.username }} 👋</h1>
       <p>Here’s your quick summary and actions.</p>
 
+      <!-- Cards -->
       <div class="card-grid">
-        <a href="{% url 'approve_jobs' %}" class="card">
+        <a href="{% url 'approve_jobs' %}" class="card border-left-blue">
           <h3>Pending Jobs</h3>
           <p>{{ pending_jobs_count }} jobs awaiting approval.</p>
         </a>
 
-        <a href="{% url 'monitor_applications' %}" class="card">
+        <a href="{% url 'monitor_applications' %}" class="card border-left-orange">
           <h3>Monitor Applications</h3>
           <p>{{ total_applications }} student applications received.</p>
         </a>
       </div>
+
+      <!-- Bottom Section -->
+        <div class="dashboard-section">
+          <!-- Pie Chart on Left -->
+          <div class="status-chart card">
+            <h3>Job Approval Status</h3>
+            <canvas id="jobStatusChart" width="130" height="130"></canvas>
+            <div class="legend">
+              <div><span class="dot approved"></span> Approved</div>
+              <div><span class="dot pending"></span> Pending</div>
+              <div><span class="dot rejected"></span> Rejected</div>
+            </div>
+          </div>
+
+          <!-- Recent Applications on Right -->
+          <div class="activity-box card">
+            <h3>Recent Applications</h3>
+            <ul>
+              {% for app in recent_activities %}
+                <li>
+                  <strong>{{ app.student.user.username }}</strong> applied for
+                  <em>{{ app.job.title }}</em><br>
+                  <small>{{ app.applied_at|date:"M d, H:i" }}</small>
+                </li>
+              {% empty %}
+                <li>No recent activity found.</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
     </main>
   </div>
+
+  <!-- Pie Chart Script -->
   <script>
-  // This replaces the current history entry (login/register) with the dashboard itself
-  if (window.history.replaceState) {
-    window.history.replaceState(null, '', window.location.href);
-  }
-</script>
+    const ctx = document.getElementById('jobStatusChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Approved', 'Pending', 'Rejected'],
+        datasets: [{
+          data: [
+            {{ status_counts.approved }},
+            {{ status_counts.pending }},
+            {{ status_counts.rejected }}
+          ],
+          backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+  </script>
+
+  <script>
+    if (window.history.replaceState) {
+      window.history.replaceState(null, '', window.location.href);
+    }
+  </script>
 </body>
 </html>

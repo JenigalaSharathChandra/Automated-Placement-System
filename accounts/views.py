@@ -41,7 +41,6 @@ def register_view(request):
             elif role == 'coordinator':
                 PlacementCoordinator.objects.create(user=user)
             elif role == 'admin':
-                # No profile model needed, but you can optionally set superuser/staff flags
                 user.is_staff = True
                 user.save()
 
@@ -81,11 +80,11 @@ def login_view(request):
 
 @never_cache
 def logout_view(request):
-    SystemLog.objects.create(
-        user=request.user,
-        action="User Logged Out",
-        details=""
-    )
+    if request.user.is_authenticated:
+        SystemLog.objects.create(
+            user=request.user,
+            action="User Logged Out",
+            details=""
+        )
     logout(request)
     return redirect('login')
-
