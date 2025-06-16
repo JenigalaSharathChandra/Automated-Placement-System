@@ -8,7 +8,7 @@ from accounts.models import Job, Application, Interview, Student
 @student_required
 def student_dashboard(request):
     student = Student.objects.get(user=request.user)
-    total_jobs = Job.objects.filter(approved=True).count()
+    total_jobs = Job.objects.filter(status='approved').count()
     applied_jobs = Application.objects.filter(student=student).count()
     upcoming_interviews = Interview.objects.filter(
         application__student=student,
@@ -23,7 +23,7 @@ def student_dashboard(request):
 @student_required
 def view_jobs(request):
     student = Student.objects.get(user=request.user)
-    approved_jobs = Job.objects.filter(approved=True).select_related('recruiter')
+    approved_jobs = Job.objects.filter(status='approved').select_related('recruiter')
 
     title_query = request.GET.get('title', '')
     company_query = request.GET.get('company', '')
@@ -66,7 +66,7 @@ def view_jobs(request):
 
 @student_required
 def apply_job(request, job_id):
-    job = get_object_or_404(Job, id=job_id, approved=True)
+    job = get_object_or_404(Job, id=job_id, status='approved')
     student = get_object_or_404(Student, user=request.user)
     existing_application = Application.objects.filter(student=student, job=job).first()
     if existing_application:

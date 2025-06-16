@@ -48,7 +48,13 @@ class Job(models.Model):
     description = models.TextField()
     criteria = models.CharField(max_length=100)
     vacancies = models.IntegerField()
-    approved = models.BooleanField(default=False)
+
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):
         return f"{self.title} - {self.recruiter.company_name}"

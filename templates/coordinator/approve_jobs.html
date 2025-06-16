@@ -5,6 +5,28 @@
   <meta charset="UTF-8">
   <title>Approve Job Postings | Coordinator</title>
   <link rel="stylesheet" href="{% static 'css/approve_jobs.css' %}">
+  <style>
+    .approve-btn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    .reject-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .job-action-form {
+      display: inline;
+    }
+  </style>
 </head>
 <body>
   <div class="dashboard-container">
@@ -46,9 +68,17 @@
               <td>{{ job.criteria }}</td>
               <td>{{ job.vacancies }}</td>
               <td>
-                <a href="{% url 'approve_job_action' job.id %}">
-                  <button class="approve-btn">Approve</button>
-                </a>
+                <form method="post" action="{% url 'update_job_status' job.id %}" class="job-action-form">
+                  {% csrf_token %}
+                  <input type="hidden" name="status" value="approved">
+                  <button type="submit" class="approve-btn">Approve</button>
+                </form>
+
+                <form method="post" action="{% url 'update_job_status' job.id %}" class="job-action-form">
+                  {% csrf_token %}
+                  <input type="hidden" name="status" value="rejected">
+                  <button type="submit" class="reject-btn">Reject</button>
+                </form>
               </td>
             </tr>
             {% empty %}
