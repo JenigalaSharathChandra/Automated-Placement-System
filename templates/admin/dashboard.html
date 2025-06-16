@@ -31,5 +31,11 @@
       </div>
     </main>
   </div>
+  <script>
+  // This replaces the current history entry (login/register) with the dashboard itself
+  if (window.history.replaceState) {
+    window.history.replaceState(null, '', window.location.href);
+  }
+</script>
 </body>
 </html>

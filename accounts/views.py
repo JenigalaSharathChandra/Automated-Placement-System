@@ -6,6 +6,7 @@ from django.contrib import messages
 from .forms import RegistrationForm
 from accounts.models import Student, CompanyRecruiter, PlacementCoordinator, SystemLog
 from accounts.decorators import student_required, recruiter_required, coordinator_required, admin_required
+from django.views.decorators.cache import never_cache
 
 # Role-to-dashboard mapping
 ROLE_DASHBOARD_MAP = {
@@ -21,9 +22,10 @@ def home(request):
 def home_redirect(request):
     return redirect('login')
 
+@never_cache
 def register_view(request):
     if request.user.is_authenticated:
-        return redirect('home_redirect')
+        return redirect(ROLE_DASHBOARD_MAP.get(request.user.role, 'home'))
 
     if request.method == 'POST':
         role = request.POST.get('role', 'student')
@@ -54,7 +56,11 @@ def register_view(request):
         form = RegistrationForm()
     return render(request, 'accounts/register.html', {'form': form})
 
+@never_cache
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect(ROLE_DASHBOARD_MAP.get(request.user.role, 'home'))
+
     error = None
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -72,6 +78,8 @@ def login_view(request):
             error = "Invalid username or password"
     return render(request, 'accounts/login.html', {'error': error})
 
+
+@never_cache
 def logout_view(request):
     SystemLog.objects.create(
         user=request.user,
@@ -80,3 +88,4 @@ def logout_view(request):
     )
     logout(request)
     return redirect('login')
+
