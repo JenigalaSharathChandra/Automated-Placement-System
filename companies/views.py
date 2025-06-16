@@ -191,19 +191,25 @@ def edit_interview(request, interview_id):
 @csrf_exempt
 @require_POST
 def update_interview_status(request, interview_id):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            new_status = data.get("status")
-            interview = Interview.objects.get(id=interview_id)
-            interview.status = new_status
-            interview.save()
-            return JsonResponse({"success": True})
-        except Interview.DoesNotExist:
-            return JsonResponse({"success": False, "error": "Interview not found"})
-        except Exception as e:
-            return JsonResponse({"success": False, "error": str(e)})
-    return JsonResponse({'success': False, 'error': 'Invalid request'})
+    try:
+        data = json.loads(request.body)
+        new_status = data.get("status")
+
+        VALID_STATUSES = ['pending', 'completed']
+        if new_status not in VALID_STATUSES:
+            return JsonResponse({"success": False, "error": "Invalid status value"})
+
+        interview = Interview.objects.get(id=interview_id)
+        interview.status = new_status
+        interview.save()
+
+        print(f"✅ Status updated: Interview ID {interview_id} set to {new_status}")
+        return JsonResponse({"success": True})
+
+    except Interview.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Interview not found"})
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)})
 
 @csrf_exempt
 @require_POST

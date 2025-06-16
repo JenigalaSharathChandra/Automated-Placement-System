@@ -50,7 +50,11 @@
                 <td>{% if interview.meeting_link %}Online{% else %}Offline{% endif %}</td>
                 <td>
                   {% if interview.meeting_link %}
-                    <a href="{{ interview.meeting_link }}" target="_blank">Join</a>
+                    {% if interview.status == 'completed' %}
+                      <a href="#" onclick="alert('This interview is already marked as completed. Join link is disabled.'); return false;" class="disabled-link">Join</a>
+                    {% else %}
+                      <a href="{{ interview.meeting_link }}" target="_blank">Join</a>
+                    {% endif %}
                   {% else %}-{% endif %}
                 </td>
                 <td>{{ interview.notes }}</td>

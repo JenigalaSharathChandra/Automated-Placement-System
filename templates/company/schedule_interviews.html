@@ -295,7 +295,7 @@
   </script>
   <script>
     function updateInterviewStatus(interviewId, newStatus) {
-      fetch(`/update-interview-status/${interviewId}/`, {
+      fetch(`/company/update-interview-status/${interviewId}/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
