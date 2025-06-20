@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'campus_runner.urls'
+ROOT_URLCONF = 'automated_recruitment_system.urls'
 
 TEMPLATES = [
     {
@@ -73,7 +73,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'campus_runner.wsgi.application'
+WSGI_APPLICATION = 'automated_recruitment_system.wsgi.application'
 
 # PostgreSQL with Railway (uses DATABASE_URL from Railway)
 DATABASES = {
