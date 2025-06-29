@@ -59,7 +59,7 @@
                 {% if job.id in applied_job_ids %}
                   <button class="apply-btn disabled" disabled>Already Applied</button>
                 {% else %}
-                  <form method="post" action="{% url 'apply_job' job.id %}">
+                  <form method="post" action="{% url 'apply_job' job.id %}?page={{ page_obj.number }}">
                     {% csrf_token %}
                     <button type="submit" class="apply-btn">Apply</button>
                   </form>

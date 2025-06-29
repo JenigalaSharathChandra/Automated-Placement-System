@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from accounts.decorators import student_required
 from accounts.models import Job, Application, Interview, Student
+from django.urls import reverse
+
 
 # Utility to calculate profile completion
 def calculate_profile_completion(student):
@@ -101,14 +103,18 @@ def apply_job(request, job_id):
         Application.objects.create(student=student, job=job)
         messages.success(request, "Application submitted successfully.")
 
-    return redirect('view_jobs')
+    # Preserve current page
+    current_page = request.GET.get('page', '')
+    redirect_url = f"{reverse('view_jobs')}?page={current_page}" if current_page else reverse('view_jobs')
+    return redirect(redirect_url)
+
 
 @student_required
 def applied_jobs(request):
     student = get_object_or_404(Student, user=request.user)
     applications = Application.objects.filter(student=student).select_related('job__recruiter')
 
-    paginator = Paginator(applications, 5)
+    paginator = Paginator(applications, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
