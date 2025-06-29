@@ -98,23 +98,34 @@ body {
   }
   
   .status {
-    padding: 5px 10px;
-    border-radius: 5px;
-    color: white;
-    font-weight: bold;
-  }
-  
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 14px;
+  color: white;
+}
+
   .status.pending {
     background-color: #ffc107;
   }
-  
+
   .status.shortlisted {
     background-color: #28a745;
   }
-  
+
   .status.rejected {
     background-color: #dc3545;
   }
+
+  .status.selected {
+    background-color: #007bff;
+  }
+
+  .status.unknown {
+    background-color: #6c757d;
+  }
+
   
   .pagination {
   text-align: center;
