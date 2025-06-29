@@ -115,8 +115,9 @@ body {
   .status.rejected {
     background-color: #dc3545;
   }
-  .status.selected {
-  background-color: #17a2b8; /* Blueish-green */
+ .status.selected {
+  background-color: #007bff;
+  color: white;
 }
   
   .pagination {
