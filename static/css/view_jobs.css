@@ -68,9 +68,8 @@ body {
 
 /* Main Content */
 .main-content {
-  margin-left: 240px;
-  padding: 40px;
   flex: 1;
+  padding: 40px;
 }
 
 .main-content h1 {
