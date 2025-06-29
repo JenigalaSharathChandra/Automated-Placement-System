@@ -97,7 +97,7 @@ def view_applicants(request):
     else:
         applications = applications.order_by('job__title', 'student__user__username')
 
-    paginator = Paginator(applications, 6)
+    paginator = Paginator(applications, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
