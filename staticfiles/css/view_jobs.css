@@ -11,9 +11,6 @@ body {
 
 /* Sidebar */
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 240px;
   height: 100vh;
   background-color: #004aad;
@@ -22,6 +19,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
   z-index: 100;
 }
 
@@ -68,7 +68,7 @@ body {
 
 /* Main Content */
 .main-content {
-  margin-left: 240px; /* Prevent overlap with fixed sidebar */
+  margin-left: 240px;
   padding: 40px;
   flex: 1;
 }
@@ -110,24 +110,14 @@ body {
 }
 
 /* Job Grid */
-.jobs-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 32px;
-  justify-content: flex-start;
-  margin-top: 30px;
-}
-
 .job-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
 }
 
 /* Job Card */
 .job-card {
-  flex: 0 0 calc(33.333% - 22px);
-  box-sizing: border-box;
   background: white;
   padding: 20px;
   border-radius: 10px;
@@ -136,7 +126,6 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 320px;
 }
 
 .job-card-body {
@@ -162,7 +151,6 @@ body {
 .apply-btn {
   background-color: #004aad;
   color: white;
-  margin-bottom: 20px;
 }
 
 .apply-btn:hover {
