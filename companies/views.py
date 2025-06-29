@@ -1,4 +1,4 @@
-# ✅ Refactored Company App - companies/views.py
+# ✅Company App - companies/views.py
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.urls import reverse
 import json
-
+from collections import defaultdict
 from accounts.decorators import recruiter_required
 from accounts.models import Job, Application, Interview
 from accounts.models import CompanyRecruiter, ActivityLog, Student
@@ -94,15 +94,21 @@ def view_applicants(request):
 
     if job_id:
         applications = applications.filter(job__id=job_id)
+    else:
+        applications = applications.order_by('job__title', 'student__user__username')
 
     paginator = Paginator(applications, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    # Group applications by job title
+    grouped_apps = defaultdict(list)
+    for app in page_obj:
+        grouped_apps[app.job.title].append(app)
+
     if request.method == 'POST':
         application_id = request.POST.get('application_id')
         new_status = request.POST.get('status')
-
         try:
             application = Application.objects.get(id=application_id, job__recruiter=recruiter)
             application.status = new_status
@@ -121,7 +127,7 @@ def view_applicants(request):
         return redirect(url + params)
 
     return render(request, 'company/view_applicants.html', {
-        'applications': page_obj,
+        'grouped_apps': grouped_apps.items(),  # 👈 used in template
         'job_list': jobs,
         'page_obj': page_obj,
     })

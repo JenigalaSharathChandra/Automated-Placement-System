@@ -14,29 +14,8 @@
       margin-left: 4px;
     }
 
-    .filter-dropdown {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      z-index: 5;
-      margin-top: 5px;
-      background: white;
-      border: 1px solid #ccc;
-      padding: 6px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .filter-dropdown select {
-      font-size: 14px;
-      padding: 4px;
-    }
-
     .hidden {
       display: none;
-    }
-
-    .dropdown-header {
-      position: relative;
     }
 
     .pagination {
@@ -56,6 +35,13 @@
 
     .pagination-buttons a:hover {
       background-color: #003580;
+    }
+
+    .job-group-header {
+      background-color: #f0f0f0;
+      font-weight: bold;
+      padding: 8px;
+      text-align: left;
     }
   </style>
 </head>
@@ -80,6 +66,19 @@
     <main class="main-content">
       <h1>Applicants 📋</h1>
 
+      <!-- Job Filter -->
+      <form method="get" id="jobFilterForm" class="inline-form" style="margin-bottom: 16px;">
+        <label for="job_id"><strong>Filter by Job:</strong></label>
+        <select name="job_id" id="job_id" onchange="this.form.submit()">
+          <option value="">All Jobs</option>
+          {% for job in job_list %}
+            <option value="{{ job.id }}" {% if job.id|stringformat:"s" == request.GET.job_id %}selected{% endif %}>
+              {{ job.title }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+
       <div class="applicants-container">
         <table class="applicants-table">
           <thead>
@@ -88,49 +87,41 @@
               <th>Email</th>
               <th>Skills</th>
               <th>GPA</th>
-              <th class="dropdown-header">
-                Applied For
-                <button class="filter-toggle" onclick="toggleFilterDropdown(event)">▼</button>
-                <form method="get" id="jobFilterForm" class="filter-dropdown hidden">
-                  <select name="job_id" onchange="document.getElementById('jobFilterForm').submit()">
-                    <option value="">All Jobs</option>
-                    {% for job in job_list %}
-                      <option value="{{ job.id }}" {% if job.id|stringformat:"s" == request.GET.job_id %}selected{% endif %}>
-                        {{ job.title }}
-                      </option>
-                    {% endfor %}
-                  </select>
-                </form>
-              </th>
+              <th>Applied For</th>
               <th>Status</th>
               <th>Profile</th>
             </tr>
           </thead>
           <tbody>
-            {% for app in applications %}
-              <tr>
-                <td>{{ app.student.user.get_full_name|default:app.student.user.username }}</td>
-                <td>{{ app.student.user.email }}</td>
-                <td>{{ app.student.skills }}</td>
-                <td>{{ app.student.gpa }}</td>
-                <td>{{ app.job.title }}</td>
-                <td>
-                  <form method="post" class="status-form" data-app-id="{{ app.id }}">
-                    {% csrf_token %}
-                    <input type="hidden" name="application_id" value="{{ app.id }}">
-                    <select name="status" onchange="this.form.requestSubmit()">
-                      {% for key, value in app.STATUS_CHOICES %}
-                        <option value="{{ key }}" {% if app.status == key %}selected{% endif %}>{{ value }}</option>
-                      {% endfor %}
-                    </select>
-                  </form>
-                </td>
-                <td>
-                  <a href="{% url 'recruiter_student_profile' app.student.id %}" target="_blank" class="view-profile-link">
-                    View Profile
-                  </a>
-                </td>
+            {% for job_title, apps in grouped_apps %}
+              <tr class="job-group-header">
+                <td colspan="7">{{ job_title }}</td>
               </tr>
+              {% for app in apps %}
+                <tr>
+                  <td>{{ app.student.user.get_full_name|default:app.student.user.username }}</td>
+                  <td>{{ app.student.user.email }}</td>
+                  <td>{{ app.student.skills }}</td>
+                  <td>{{ app.student.gpa }}</td>
+                  <td>{{ app.job.title }}</td>
+                  <td>
+                    <form method="post" class="status-form" data-app-id="{{ app.id }}">
+                      {% csrf_token %}
+                      <input type="hidden" name="application_id" value="{{ app.id }}">
+                      <select name="status" onchange="this.form.requestSubmit()">
+                        {% for key, value in app.STATUS_CHOICES %}
+                          <option value="{{ key }}" {% if app.status == key %}selected{% endif %}>{{ value }}</option>
+                        {% endfor %}
+                      </select>
+                    </form>
+                  </td>
+                  <td>
+                    <a href="{% url 'recruiter_student_profile' app.student.id %}" target="_blank" class="view-profile-link">
+                      View Profile
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
             {% empty %}
               <tr><td colspan="7">No applicants found for this filter.</td></tr>
             {% endfor %}
@@ -179,21 +170,6 @@
           }
         });
       });
-    });
-
-    // Filter dropdown toggle
-    function toggleFilterDropdown(event) {
-      event.stopPropagation();
-      const dropdown = document.querySelector('.filter-dropdown');
-      dropdown.classList.toggle('hidden');
-    }
-
-    // Close dropdown on outside click
-    document.addEventListener('click', function () {
-      const dropdown = document.querySelector('.filter-dropdown');
-      if (dropdown && !dropdown.classList.contains('hidden')) {
-        dropdown.classList.add('hidden');
-      }
     });
   </script>
 </body>
