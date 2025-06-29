@@ -45,7 +45,7 @@
                   <td>{{ application.job.recruiter.company_name|default:application.job.recruiter.user.username }}</td>
                   <td>
                     {% if application.status %}
-                      <span class="status {{ application.status }}">
+                      <span class="status {{ application.status|capfirst }}">
                         {{ application.status|capfirst }}
                       </span>
                     {% else %}
