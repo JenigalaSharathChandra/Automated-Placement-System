@@ -44,10 +44,15 @@
                   <td>{{ application.job.title }}</td>
                   <td>{{ application.job.recruiter.company_name|default:application.job.recruiter.user.username }}</td>
                   <td>
-  <span class="status selected">
-    SELECTED DEBUG
+  <span class="status {{ application.status }}">
+    {% if application.status %}
+      {{ application.status|capfirst }}
+    {% else %}
+      <em style="color: red;">No status</em>
+    {% endif %}
   </span>
 </td>
+
                 </tr>
               {% empty %}
                 <tr>
