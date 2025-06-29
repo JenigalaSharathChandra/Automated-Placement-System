@@ -128,6 +128,11 @@ body {
   background-color: #6c757d;
 }
 
+.status.Selected {
+  background-color: #007bff;
+  color: white;
+}
+
 /* Pagination */
 .pagination {
   margin-top: 20px;
