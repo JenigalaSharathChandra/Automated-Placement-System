@@ -44,15 +44,14 @@
                   <td>{{ application.job.title }}</td>
                   <td>{{ application.job.recruiter.company_name|default:application.job.recruiter.user.username }}</td>
                   <td>
-                    <span class="status {{ application.status }}">
-                      {% if application.status %}
+                    {% if application.status %}
+                      <span class="status {{ application.status }}">
                         {{ application.status|capfirst }}
-                      {% else %}
-                        <em style="color: red;">No status</em>
-                      {% endif %}
-                    </span>
+                      </span>
+                    {% else %}
+                      <span class="status unknown">Unknown</span>
+                    {% endif %}
                   </td>
-
                 </tr>
               {% empty %}
                 <tr>
@@ -64,7 +63,7 @@
                 <td colspan="3">No applications found.</td>
               </tr>
             {% endif %}
-          </tbody>          
+          </tbody>
         </table>
       </div>
 
